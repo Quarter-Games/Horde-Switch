@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public struct Deck : INetworkStruct
 {
-    [Networked, Capacity(60)]
+    [Networked,Capacity(60)]
     [SerializeField]
     private NetworkLinkedList<Card> cards => default;
     public Deck(IEnumerable<Card> _cards)

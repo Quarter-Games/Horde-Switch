@@ -9,12 +9,15 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
 {
     [SerializeField] Camera _camera;
     [SerializeField] GameObject _CameraPositionForSecondPLayer;
+    [SerializeField] TMP_Text RoomName;
     public PlayerController PlayerPrefab;
     NetworkRunner runner;
+
     private void Awake()
     {
         runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
         PlayerJoined(runner.LocalPlayer);
+        RoomName.text = runner.SessionInfo.Name;
     }
     private void OnEnable()
     {
