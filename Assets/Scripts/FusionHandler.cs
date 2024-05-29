@@ -26,7 +26,8 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
 
     private void PlayerCreated(PlayerController controller)
     {
-        controller.deck.AddCard(new Card { Value = 1 });
+        //Debug.LogWarning("Delete This Method");
+        //controller.deck.AddCard(new Card { Value = 1 });
     }
 
     public void PlayerJoined(PlayerRef player)
@@ -40,9 +41,6 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
                 _camera.transform.localRotation = Quaternion.identity;
             }
         }
-        var obj = runner.Spawn(PlayerPrefab, new Vector3(0, 1, 0), Quaternion.identity);
-        obj.PlayerID = player.PlayerId;
-        obj.isLocalPlayer = player == runner.LocalPlayer;
     }
     private void OnDisable()
     {

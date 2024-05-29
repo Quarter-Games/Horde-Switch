@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class GameplayUIHandler : MonoBehaviour
 {
@@ -10,7 +11,10 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] TMP_Text opponentAmount;
     private void OnEnable()
     {
-        PlayerController.PlayerCreated += OnPlayerCreated;
+        foreach (var player in PlayerController.players)
+        {
+            OnPlayerCreated(player);
+        }
 
     }
 
@@ -37,6 +41,5 @@ public class GameplayUIHandler : MonoBehaviour
 
     private void OnDisable()
     {
-        PlayerController.PlayerCreated -= OnPlayerCreated;
     }
 }

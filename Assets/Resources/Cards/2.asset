@@ -14,4 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardData:
     ID: 2
-    Value: 3
+    Value: 2
+    Name: 
+    ownerType: 0
+    cardType: 1

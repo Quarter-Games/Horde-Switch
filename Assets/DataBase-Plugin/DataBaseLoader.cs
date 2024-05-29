@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class DataBaseLoader
+public static class DataBaseLoader
 {    
     public static async Task<Dictionary<TKey, TValue>> ReadTableAsync<TKey, TValue>(string tableName, Func<string, TKey> keyParser, Func<List<string>, TValue> valueConstructor,SheetsSettings API_settings)
     {

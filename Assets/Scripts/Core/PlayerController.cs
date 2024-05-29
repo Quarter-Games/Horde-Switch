@@ -14,9 +14,14 @@ public class PlayerController : NetworkBehaviour
     [ContextMenu("Add Card")]
     public void AddCard()
     {
-        var copy = hand;
-        copy.AddCard(new Card { Value = 1 });
-        hand = copy;
+        Debug.LogWarning("Delete This Method");
+        //var copy = hand;
+        //copy.AddCard(new Card { Value = 1 });
+        //hand = copy;
+    }
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
     }
     private void Start()
     {
@@ -24,6 +29,33 @@ public class PlayerController : NetworkBehaviour
         hand = new();
         deck = new();
         PlayerCreated?.Invoke(this);
+    }
+    public void SetUp(List<int> DeckCardIDs, int DeckSize, int HandSize)
+    {
+        List<Card> cards = new List<Card>();
+        for (int i = 0; i < DeckSize; i++)
+        {
+            //Declare player Deck
+            int k = i % DeckCardIDs.Count;
+            cards.Add(Card.Create(DeckCardIDs[k]));
+        }
+        deck = new Deck(cards);
+        cards.Clear();
+        for (int i = 0; i < HandSize; i++)
+        {
+            //Declare player Hand
+            var _deck = this.deck;
+            cards.Add(_deck.Draw());
+            deck = _deck;
+        }
+        hand = new Hand(cards);
+
+    }
+    public override void FixedUpdateNetwork()
+    {
+        base.FixedUpdateNetwork();
+        hand = hand;
+        deck = deck;
     }
     private void OnDestroy()
     {
