@@ -18,3 +18,4 @@ MonoBehaviour:
     Name: 
     ownerType: 0
     cardType: 1
+  cardSprite: {fileID: 21300000, guid: be134c4db38eec948a7565d57c176f60, type: 3}

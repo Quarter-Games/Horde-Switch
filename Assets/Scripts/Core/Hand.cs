@@ -22,5 +22,9 @@ public struct Hand : INetworkStruct
     public void AddCard(Card card)
     {
         cards.Add(card);
+    } 
+    public Card this[int index]
+    {
+        get { return cards[index]; }
     }
 }

@@ -18,10 +18,11 @@ public class GameSettings : DataBaseSynchronizedScribtableObject
             (list) => new GameConfig(list),
             settings
             );
-        var assets = UnityEditor.AssetDatabase.FindAssets("t:GameSettings", new string[] { "Game Settings" });
+        //var assets = UnityEditor.AssetDatabase.FindAssets("t:GameSettings", new string[] { "Game Settings" });
         foreach (var config in a)
         {
-            if (assets == null || assets.Length == 0)
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<GameSettings>($"Assets/Resources/Game Settings/{config.Key}.asset");
+            if (asset==null)
             {
                 GameSettings _settings = CreateInstance<GameSettings>();
                 _settings.gameConfig = config.Value;
@@ -29,7 +30,7 @@ public class GameSettings : DataBaseSynchronizedScribtableObject
             }
             else
             {
-                UnityEditor.AssetDatabase.LoadAssetAtPath<GameSettings>($"Assets/Resources/Cards/{config.Key}.asset").gameConfig = config.Value;
+                asset.gameConfig = config.Value;
             }
             Debug.Log($"Key: {config.Key}, Value: {config.Value}");
         }

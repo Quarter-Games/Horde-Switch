@@ -9,6 +9,8 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] PlayerController _opponentController;
     [SerializeField] TMP_Text playerAmount;
     [SerializeField] TMP_Text opponentAmount;
+    [SerializeField] List<HandCardVisual> PlayerCards;
+
     private void OnEnable()
     {
         foreach (var player in PlayerController.players)
@@ -32,6 +34,12 @@ public class GameplayUIHandler : MonoBehaviour
         if (controller.isLocalPlayer)
         {
             _playerController = controller;
+            for (int i = 0; i < PlayerCards.Count; i++)
+            {
+                HandCardVisual carVisual = PlayerCards[i];
+                var card = controller.hand[i];
+                carVisual.SetUpVisual(card.ID.ToString());
+            }
         }
         else
         {
@@ -39,7 +47,4 @@ public class GameplayUIHandler : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-    }
 }

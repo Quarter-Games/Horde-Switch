@@ -6,6 +6,7 @@ using UnityEngine;
 public class CardResources : DataBaseSynchronizedScribtableObject
 {
     public CardData cardData;
+    [SerializeField] public Sprite cardSprite;
     [Serializable]
     public class CardData
     {
@@ -47,10 +48,11 @@ public class CardResources : DataBaseSynchronizedScribtableObject
             (list) => new CardData(list),
             settings
             );
-        var assets = UnityEditor.AssetDatabase.FindAssets("t:CardResources", new string[] { "Cards" });
+        //var assets = UnityEditor.AssetDatabase.FindAssets("t:CardResources");
         foreach (var card in a)
         {
-            if (assets == null || assets.Length == 0)
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{card.Key}.asset");
+            if (asset==null)
             {
                 CardResources cardResources = CreateInstance<CardResources>();
                 cardResources.cardData = card.Value;
@@ -58,7 +60,7 @@ public class CardResources : DataBaseSynchronizedScribtableObject
             }
             else
             {
-                UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{card.Key}.asset").cardData = card.Value;
+                asset.cardData = card.Value;
             }
             Debug.Log($"Key: {card.Key}, ID: {card.Value.ID}, Value: {card.Value.Value}");
         }

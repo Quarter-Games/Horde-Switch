@@ -18,3 +18,4 @@ MonoBehaviour:
     Name: Scorpion King
     ownerType: 1
     cardType: 0
+  cardSprite: {fileID: 0}
