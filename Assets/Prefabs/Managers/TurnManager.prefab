@@ -92,7 +92,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grid: {fileID: 7458456990340067406}
   enemyPrefab: {fileID: 3976160424674780435, guid: ac18ba92b1ac112418d7345b6c10e38b, type: 3}
-  EnemyGridSize: {x: 3, y: 4}
+  EnemyGridSize: {x: 4, y: 3}
 --- !u!114 &1504632072670421642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1708342925
   ObjectInterest: 1
-  Flags: 524289
+  Flags: 786433
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 6191694490732602978}

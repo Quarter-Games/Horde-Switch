@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4929078428675218075}
   - component: {fileID: 3976160424674780435}
   - component: {fileID: 8411088726190472063}
+  - component: {fileID: 5904123524301897630}
   m_Layer: 0
   m_Name: EnemyPrefab
   m_TagString: Untagged
@@ -29,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1501931967180059396}
@@ -84,10 +85,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3491905005
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 524289
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3976160424674780435}
+  - {fileID: 5904123524301897630}
+--- !u!114 &5904123524301897630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689074685056601938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 1
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1001 &1395366394877400303
 PrefabInstance:
   m_ObjectHideFlags: 0
