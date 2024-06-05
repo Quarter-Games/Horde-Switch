@@ -2,9 +2,10 @@ using Fusion;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static Unity.Collections.Unicode;
+using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -12,14 +13,37 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] TMPro.TMP_InputField RoomNameInputField;
     [SerializeField] GameObject WaitingWindow;
     [SerializeField] GameSettings _gameSettings;
+    [SerializeField] TurnManager _turnManagerPrefab;
+    [SerializeField] NetworkEvents Callbacks;
+    [SerializeField] Button PlayButton;
 
     public PlayerController PlayerPrefab;
     private void Awake()
     {
+        Callbacks.OnShutdown.AddListener(OnShutdown);
+        Callbacks.OnSessionListUpdate.AddListener(SessionsUpdate);
         _gameSettings = Resources.LoadAll<GameSettings>("Game Settings")[0];
-        networkRunner.JoinSessionLobby(SessionLobby.Shared);
+        networkRunner.JoinSessionLobby(SessionLobby.Shared).ContinueWith(AfterSessionJoining);
         PlayerController.PlayerCreated += PlayerCreated;
 
+    }
+
+    private void AfterSessionJoining(Task<StartGameResult> task)
+    {
+        if (task.Result.Ok)
+        {
+            Debug.Log("Joined session lobby");
+            PlayButton.interactable = true;
+        }
+        else
+        {
+            Debug.LogError(task.Result.ShutdownReason);
+        }
+    }
+
+    private void OnShutdown(NetworkRunner runner, ShutdownReason reason)
+    {
+        Debug.Log(reason.ToString());
     }
 
     private void PlayerCreated(PlayerController controller)
@@ -38,6 +62,10 @@ public class MainMenuManager : MonoBehaviour
     public void SessionsUpdate(NetworkRunner runner, List<SessionInfo> sessionList)
     {
         Debug.Log("SessionsUpdate");
+        foreach (var session in sessionList)
+        {
+            Debug.Log(session.Name);
+        }
     }
     public async void Connect()
     {
@@ -51,7 +79,7 @@ public class MainMenuManager : MonoBehaviour
             PlayerCount = 2,
             GameMode = GameMode.Shared,
             SessionName = generateName ? null : RoomNameInputField.text,
-            IsVisible = false,
+            IsVisible = generateName,
             CustomLobbyName = networkRunner.LobbyInfo.Name
 
         };
@@ -71,6 +99,14 @@ public class MainMenuManager : MonoBehaviour
     }
     private void LoadScene()
     {
+        if (networkRunner.LocalPlayer.PlayerId == 1) {
+
+            var turnMan = networkRunner.Spawn(_turnManagerPrefab, inputAuthority: PlayerRef.None);
+            DontDestroyOnLoad(turnMan);
+            Debug.Log(turnMan.name + " is Created");
+            PlayerController.players[0].isThisTurn = true;
+        }
+        
         SceneManager.LoadScene(1);
     }
     public void PlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -81,5 +117,11 @@ public class MainMenuManager : MonoBehaviour
             obj.PlayerID = player.PlayerId;
             obj.isLocalPlayer = player == networkRunner.LocalPlayer;
         }
+    }
+    private void OnDestroy()
+    {
+        Callbacks.OnShutdown.RemoveListener(OnShutdown);
+        Callbacks.OnSessionListUpdate.RemoveListener(SessionsUpdate);
+        PlayerController.PlayerCreated -= PlayerCreated;
     }
 }

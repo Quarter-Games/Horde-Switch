@@ -9,9 +9,16 @@ public class PlayerController : NetworkBehaviour
     public static event System.Action<PlayerController> PlayerCreated;
     public int PlayerID;
     public bool isLocalPlayer;
+    [Networked] public bool isThisTurn { get => default; set { } }
     [Networked] public Hand hand { get => default; set { } }
     [Networked] public Deck deck { get => default; set { } }
     [ContextMenu("Add Card")]
+
+    [Rpc]
+    public void RPC_ChangeTurn()
+    {
+        isThisTurn = !isThisTurn;
+    }
     public void AddCard()
     {
         Debug.LogWarning("Delete This Method");

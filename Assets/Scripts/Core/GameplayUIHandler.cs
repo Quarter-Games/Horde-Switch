@@ -10,14 +10,41 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] TMP_Text playerAmount;
     [SerializeField] TMP_Text opponentAmount;
     [SerializeField] List<HandCardVisual> PlayerCards;
+    public static Action RequestTurnSwap;
 
     private void OnEnable()
     {
+        HandCardVisual.OnCardClicked += CardClicked;
+        TurnManager.TurnChanged += OnTurnSwap;
         foreach (var player in PlayerController.players)
         {
             OnPlayerCreated(player);
         }
+    }
 
+    private void OnTurnSwap(PlayerController controller)
+    {
+        
+        if (controller.isLocalPlayer)
+        {
+            Debug.Log("Your Turn");
+        }
+        else
+        {
+            foreach (var card in PlayerCards)
+            {
+                card.DeselectCard();
+            }
+            Debug.Log("Opponent Turn");
+        }
+    }
+
+    private void CardClicked(HandCardVisual visual)
+    {
+        if (_playerController.isThisTurn)
+        {
+            visual.SelectCard();
+        }
     }
 
     public void AddCard()
@@ -45,6 +72,16 @@ public class GameplayUIHandler : MonoBehaviour
         {
             _opponentController = controller;
         }
+    }
+
+    public void EndTurn()
+    {
+        if (!_playerController.isThisTurn) return;
+        RequestTurnSwap?.Invoke();
+    }
+    private void OnDisable()
+    {
+        HandCardVisual.OnCardClicked -= CardClicked;
     }
 
 }

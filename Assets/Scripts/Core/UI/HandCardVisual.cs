@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
     public Image cardImage;
     public string Card_ID { get; private set; }
     private CardResources cardData;
+    public static Action<HandCardVisual> OnCardClicked;
 
     public void SetUpVisual(string card_id)
     {
@@ -25,18 +27,18 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (!HasInputAuthority) return;
-        SelectCard();
+        OnCardClicked?.Invoke(this);
         Debug.Log("Card Selected");
     }
     public void SelectCard()
     {
         if (selectedCard != null) selectedCard.DeselectCard();
+        cardImage.color = Color.green;
         selectedCard = this;
     }
     public void DeselectCard()
     {
-
+        cardImage.color = Color.white;
     }
 
 }
