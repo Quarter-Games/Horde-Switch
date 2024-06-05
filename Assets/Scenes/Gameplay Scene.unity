@@ -251,114 +251,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 95992393}
   m_CullTransparentMesh: 1
---- !u!1 &103193697
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 103193701}
-  - component: {fileID: 103193700}
-  - component: {fileID: 103193699}
-  - component: {fileID: 103193698}
-  m_Layer: 0
-  m_Name: Cube
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!65 &103193698
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 103193697}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!23 &103193699
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 103193697}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &103193700
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 103193697}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &103193701
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 103193697}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.9444296, y: 0.41, z: -2.13}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &130440417
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,6 +493,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7223321123169581097, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
   m_PrefabInstance: {fileID: 146977267}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &146977269 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 879270044124682958, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
+  m_PrefabInstance: {fileID: 146977267}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &243265920
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,6 +738,11 @@ MonoBehaviour:
   - {fileID: 1790355693}
   - {fileID: 1630541769}
   - {fileID: 1420984398}
+  EnemyCards:
+  - {fileID: 1981959912}
+  - {fileID: 1299149927}
+  - {fileID: 146977269}
+  - {fileID: 734933825}
 --- !u!1 &379991475
 GameObject:
   m_ObjectHideFlags: 0
@@ -1268,6 +1170,11 @@ PrefabInstance:
 --- !u!224 &734933824 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7223321123169581097, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
+  m_PrefabInstance: {fileID: 734933823}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &734933825 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 879270044124682958, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
   m_PrefabInstance: {fileID: 734933823}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &749718742
@@ -1866,6 +1773,11 @@ PrefabInstance:
 --- !u!224 &1299149926 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7223321123169581097, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
+  m_PrefabInstance: {fileID: 1299149925}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1299149927 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 879270044124682958, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
   m_PrefabInstance: {fileID: 1299149925}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1314251515
@@ -2567,6 +2479,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Card Visuals (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 879270044124682958, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3878364874562995885, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
       propertyPath: m_RaycastTarget
       value: 0
@@ -2659,6 +2575,11 @@ PrefabInstance:
 --- !u!224 &1981959911 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7223321123169581097, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
+  m_PrefabInstance: {fileID: 1981959910}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1981959912 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 879270044124682958, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
   m_PrefabInstance: {fileID: 1981959910}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2081756297
@@ -2924,6 +2845,5 @@ SceneRoots:
   - {fileID: 2115685051}
   - {fileID: 1582631616}
   - {fileID: 509472317}
-  - {fileID: 103193701}
   - {fileID: 2081756301}
   - {fileID: 379991478}

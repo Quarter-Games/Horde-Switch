@@ -1,6 +1,7 @@
+using Fusion;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : NetworkBehaviour
 {
     public string enemyID;
 }

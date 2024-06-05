@@ -7,8 +7,13 @@ public class TurnManager : NetworkBehaviour
     private PlayerController _localPlayer;
     private PlayerController _opponentPlayer;
     public static Action<PlayerController> TurnChanged;
+    [SerializeField] Grid grid;
+    [SerializeField] Enemy enemyPrefab;
+    [SerializeField] Vector2 EnemyGridSize;
+    Camera _camera;
     private void OnEnable()
     {
+
         GameplayUIHandler.RequestTurnSwap += EndTurnRequest;
         for (int i = 0; i < PlayerController.players.Count; i++)
         {
@@ -22,8 +27,25 @@ public class TurnManager : NetworkBehaviour
                 _opponentPlayer = player;
             }
         }
-    }
 
+    }
+    public void SetUpEnemies()
+    {
+        _camera = Camera.main;
+        for (int i = 0; i < EnemyGridSize.x; i++)
+        {
+            for (int j = 0; j < EnemyGridSize.y; j++)
+            {
+                Vector3Int position = new Vector3Int(i, 0, j);
+                var WorldPos = grid.CellToWorld(position);
+                Runner.Spawn(enemyPrefab, position: WorldPos, rotation: Quaternion.LookRotation((Vector3)WorldPos - _camera.transform.position));
+            }
+        }
+    }
+    public void SpawnEnemy()
+    {
+
+    }
     private void EndTurnRequest()
     {
         RPC_TurnSwap();

@@ -10,6 +10,7 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] TMP_Text playerAmount;
     [SerializeField] TMP_Text opponentAmount;
     [SerializeField] List<HandCardVisual> PlayerCards;
+    [SerializeField] List<GameObject> EnemyCards;
     public static Action RequestTurnSwap;
 
     private void OnEnable()
@@ -71,6 +72,12 @@ public class GameplayUIHandler : MonoBehaviour
         else
         {
             _opponentController = controller;
+            int cards = _opponentController.hand.Count;
+            for (int i = 0; i < EnemyCards.Count; i++)
+            {
+                GameObject card = EnemyCards[i];
+                card.SetActive(i<=cards);
+            }
         }
     }
 

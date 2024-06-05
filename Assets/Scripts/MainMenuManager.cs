@@ -99,15 +99,23 @@ public class MainMenuManager : MonoBehaviour
     }
     private void LoadScene()
     {
+        TurnManager turnMan = null;
         if (networkRunner.LocalPlayer.PlayerId == 1) {
 
-            var turnMan = networkRunner.Spawn(_turnManagerPrefab, inputAuthority: PlayerRef.None);
+            turnMan = networkRunner.Spawn(_turnManagerPrefab, inputAuthority: PlayerRef.None);
             DontDestroyOnLoad(turnMan);
             Debug.Log(turnMan.name + " is Created");
             PlayerController.players[0].isThisTurn = true;
         }
         
-        SceneManager.LoadScene(1);
+        var loading = SceneManager.LoadSceneAsync(1);
+        loading.completed += (AsyncOperation obj) =>
+        {
+            if (turnMan != null)
+            {
+                turnMan.SetUpEnemies();
+            }
+        };
     }
     public void PlayerJoined(NetworkRunner runner, PlayerRef player)
     {
