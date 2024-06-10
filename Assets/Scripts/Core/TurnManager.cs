@@ -32,15 +32,17 @@ public class TurnManager : NetworkBehaviour
     public void SetUpEnemies()
     {
         _camera = Camera.main;
-        grid.transform.position = new Vector3(-2, 0, -2);
+        grid.transform.position = new Vector3(0, 1.5f, -2);
         for (int i = 0; i < EnemyGridSize.x; i++)
         {
             for (int j = 0; j < EnemyGridSize.y; j++)
             {
-                Vector3Int position = new Vector3Int(i, 0, j);
+                Vector3Int position = new Vector3Int(i - 1, 0, j);
                 var WorldPos = grid.CellToWorld(position);
-                var enemy = Runner.Spawn(enemyPrefab.GetComponent<NetworkObject>(), position: WorldPos, rotation: Quaternion.LookRotation((Vector3)WorldPos - _camera.transform.position), PlayerRef.None);
+                WorldPos -= new Vector3(1f, 0, 0);
+                var enemy = Runner.Spawn(enemyPrefab, position: WorldPos, rotation: Quaternion.identity, PlayerRef.None);
                 enemy.transform.parent = transform;
+                enemy.rowNumber = j;
             }
         }
     }
