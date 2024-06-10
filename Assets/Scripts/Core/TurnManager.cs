@@ -1,19 +1,25 @@
 using Fusion;
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TurnManager : NetworkBehaviour
 {
+    public GameSettings gameSettings;
     private PlayerController _localPlayer;
     private PlayerController _opponentPlayer;
     public static Action<PlayerController> TurnChanged;
     [SerializeField] Grid grid;
     [SerializeField] Enemy enemyPrefab;
     [SerializeField] Vector2 EnemyGridSize;
+
+    [Networked] public Deck enemyDeck { get => default; set { } }
     Camera _camera;
     private void OnEnable()
     {
-
+        Enemy.OnEnemyClick += EnemyClick;
         GameplayUIHandler.RequestTurnSwap += EndTurnRequest;
         for (int i = 0; i < PlayerController.players.Count; i++)
         {
@@ -29,8 +35,34 @@ public class TurnManager : NetworkBehaviour
         }
 
     }
+
+    private void EnemyClick(Enemy enemy, PointerEventData data)
+    {
+        if (!_localPlayer.isThisTurn)
+        {
+            Debug.Log("Not Your Turn");
+            return;
+        }
+        if (_localPlayer.PlayerID == 0 && enemy.rowNumber == 0)
+        {
+            Debug.Log("Attacked First Row");
+        }
+        else if (_localPlayer.PlayerID == 1 && enemy.rowNumber == 2)
+        {
+            Debug.Log("Attacked First Row");
+        }
+    }
+
     public void SetUpEnemies()
     {
+        List<Card> cards = new List<Card>();
+        for (int i = 0; i < gameSettings.gameConfig.EnemyDeckSize; i++)
+        {
+            //Declare player Deck
+            int k = i % 13;
+            cards.Add(Card.Create(k));
+        }
+        enemyDeck = new Deck(cards);
         _camera = Camera.main;
         grid.transform.position = new Vector3(0, 1.5f, -2);
         for (int i = 0; i < EnemyGridSize.x; i++)
@@ -43,6 +75,10 @@ public class TurnManager : NetworkBehaviour
                 var enemy = Runner.Spawn(enemyPrefab, position: WorldPos, rotation: Quaternion.identity, PlayerRef.None);
                 enemy.transform.parent = transform;
                 enemy.rowNumber = j;
+                var _deck = enemyDeck;
+                var card = _deck.Draw();
+                enemyDeck = _deck;
+                enemy.enemyID = card.ID.ToString();
             }
         }
     }
@@ -72,6 +108,7 @@ public class TurnManager : NetworkBehaviour
     }
     private void OnDisable()
     {
+        Enemy.OnEnemyClick -= EnemyClick;
         GameplayUIHandler.RequestTurnSwap -= EndTurnRequest;
     }
 }

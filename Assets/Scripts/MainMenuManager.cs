@@ -100,19 +100,21 @@ public class MainMenuManager : MonoBehaviour
     private void LoadScene()
     {
         TurnManager turnMan = null;
-        if (networkRunner.LocalPlayer.PlayerId == 1) {
+        if (networkRunner.LocalPlayer.PlayerId == 1)
+        {
 
             turnMan = networkRunner.Spawn(_turnManagerPrefab, inputAuthority: PlayerRef.None);
             DontDestroyOnLoad(turnMan);
             Debug.Log(turnMan.name + " is Created");
             PlayerController.players[0].isThisTurn = true;
         }
-        
+
         var loading = SceneManager.LoadSceneAsync(1);
         loading.completed += (AsyncOperation obj) =>
         {
             if (turnMan != null)
             {
+                turnMan.gameSettings = _gameSettings;
                 turnMan.SetUpEnemies();
             }
         };
