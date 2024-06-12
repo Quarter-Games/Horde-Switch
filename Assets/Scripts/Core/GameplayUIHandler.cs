@@ -66,7 +66,7 @@ public class GameplayUIHandler : MonoBehaviour
             {
                 HandCardVisual carVisual = PlayerCards[i];
                 var card = controller.hand[i];
-                carVisual.SetUpVisual(card.ID.ToString());
+                carVisual.SetUpVisual(card);
             }
         }
         else

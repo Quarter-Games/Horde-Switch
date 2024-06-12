@@ -8,7 +8,8 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler
 {
     public static Action<Enemy, PointerEventData> OnEnemyClick;
     public int rowNumber;
-    [Networked] public string enemyID { get => default; set { } }
+    public int columnNumber;
+    [Networked] public Card Card { get => default; set { } }
     public GameObject enemyModel;
     [SerializeField] TMPro.TMP_Text enemyValue;
 
@@ -19,7 +20,7 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler
             enemyModel.transform.rotation = Quaternion.Euler(new(0, 180, 0));
         }
         enemyModel.transform.rotation *= Quaternion.Euler(new(-22.5f, 0, 0));
-        enemyValue.text = Card._CardResources.First(x => x.cardData.ID.ToString() == enemyID).cardData.Value.ToString();
+        enemyValue.text = Card.cardValue.cardData.Value.ToString();
     }
 
     public void OnPointerClick(PointerEventData eventData)

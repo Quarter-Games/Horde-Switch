@@ -2,6 +2,7 @@ using Fusion;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,6 +14,7 @@ public class TurnManager : NetworkBehaviour
     public static Action<PlayerController> TurnChanged;
     [SerializeField] Grid grid;
     [SerializeField] Enemy enemyPrefab;
+    [Networked,Capacity(12)] public NetworkLinkedList<Enemy> enemyList => default;
     [SerializeField] Vector2 EnemyGridSize;
 
     [Networked] public Deck enemyDeck { get => default; set { } }
@@ -58,8 +60,8 @@ public class TurnManager : NetworkBehaviour
         List<Card> cards = new List<Card>();
         for (int i = 0; i < gameSettings.gameConfig.EnemyDeckSize; i++)
         {
-            //Declare player Deck
-            int k = i % 13;
+            //Declare enemy Deck
+            int k = (i % 13)+1;
             cards.Add(Card.Create(k));
         }
         enemyDeck = new Deck(cards);
@@ -75,10 +77,13 @@ public class TurnManager : NetworkBehaviour
                 var enemy = Runner.Spawn(enemyPrefab, position: WorldPos, rotation: Quaternion.identity, PlayerRef.None);
                 enemy.transform.parent = transform;
                 enemy.rowNumber = j;
+                enemy.columnNumber = i;
                 var _deck = enemyDeck;
                 var card = _deck.Draw();
                 enemyDeck = _deck;
-                enemy.enemyID = card.ID.ToString();
+                Debug.Log(card.ID);
+                enemy.Card = card;
+                enemyList.Add(enemy);
             }
         }
     }

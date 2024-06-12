@@ -1,5 +1,6 @@
 using Fusion;
 using System;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -7,15 +8,21 @@ public struct Card : INetworkStruct
 {
     public static CardResources[] _CardResources;
     public int ID;
+    public CardResources cardValue => _CardResources[ID - 1];
 
     /// <summary>
-    /// Factory Mthod for creating different types of cards based on the data from configs
+    /// Factory Method for creating different types of cards based on the data from configs
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     public static Card Create(int id)
     {
-        if (_CardResources == null) _CardResources = Resources.LoadAll<CardResources>("Cards");
+        if (_CardResources == null)
+        {
+            _CardResources = Resources.LoadAll<CardResources>("Cards");
+            _CardResources = _CardResources.ToList().OrderBy(x => x.cardData.ID).ToArray();
+        }
+
         switch (_CardResources[id].cardData.cardType)
         {
             //case CardResources.CardData.CardType.Creature:
