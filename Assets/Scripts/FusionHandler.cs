@@ -19,17 +19,6 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
         PlayerJoined(runner.LocalPlayer);
         RoomName.text = runner.SessionInfo.Name;
     }
-    private void OnEnable()
-    {
-        PlayerController.PlayerCreated += PlayerCreated;
-    }
-
-    private void PlayerCreated(PlayerController controller)
-    {
-        //Debug.LogWarning("Delete This Method");
-        //controller.deck.AddCard(new Card { Value = 1 });
-    }
-
     public void PlayerJoined(PlayerRef player)
     {
         if (player == runner.LocalPlayer)
@@ -41,10 +30,6 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
                 _camera.transform.localRotation = Quaternion.identity;
             }
         }
-    }
-    private void OnDisable()
-    {
-        PlayerController.PlayerCreated -= PlayerCreated;
     }
     public void LeaveGame()
     {

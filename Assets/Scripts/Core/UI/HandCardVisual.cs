@@ -51,6 +51,7 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
 }
 public class SelectedCards : List<HandCardVisual>
 {
+    public event Action Changed;
     public void SelectCard(HandCardVisual card)
     {
         if (this.Any(x => x.CardData.cardValue.cardData.IsMonoSelectedCard()))
@@ -66,13 +67,22 @@ public class SelectedCards : List<HandCardVisual>
             }
             this.Add(card);
         }
+        Changed?.Invoke();
+        Debug.Log(CardValues());
     }
     public void DeselectCard(HandCardVisual card)
     {
         this.Remove(card);
+        Changed?.Invoke();
     }
     public int CardValues()
     {
         return this.Sum(x => x.CardData.cardValue.cardData.Value);
+    }
+    public List<Enemy> GetValidEnemies(List<Enemy> enemies,int playerRow)
+    {
+        if (Count == 0) return new();
+        if (Count == 1) return this[0].CardData.cardValue.cardData.GetPossibleEnemies(enemies, playerRow);
+        return enemies.FindAll(x => x.Card.cardValue.cardData.Value <= CardValues() && x.rowNumber == playerRow);
     }
 }

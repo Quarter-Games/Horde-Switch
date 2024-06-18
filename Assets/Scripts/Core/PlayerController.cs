@@ -7,11 +7,12 @@ public class PlayerController : NetworkBehaviour
 {
     public static List<PlayerController> players = new();
     public static event System.Action<PlayerController> PlayerCreated;
-    public int PlayerID;
+    [Networked] public int PlayerID { get => default; set { } }
     public bool isLocalPlayer;
+    [Networked] public int MainRow { get => default; set { } }
     [Networked] public bool isThisTurn { get => default; set { } }
     [Networked] public Hand hand { get => default; set { } }
-    [Networked] public Deck deck { get => default; set { } }
+    [Networked] public int HP { get => default; set { } }
     [ContextMenu("Add Card")]
 
     [Rpc]
@@ -30,39 +31,29 @@ public class PlayerController : NetworkBehaviour
     {
         DontDestroyOnLoad(gameObject);
     }
-    private void Start()
+    public override void Spawned()
     {
         players.Add(this);
-        hand = new();
-        deck = new();
+    }
+    private void Start()
+    {
+        isLocalPlayer = Runner.LocalPlayer.PlayerId == PlayerID;
         PlayerCreated?.Invoke(this);
     }
-    public void SetUp(List<int> DeckCardIDs, int DeckSize, int HandSize)
+    public Deck SetUp(Deck _deck, int HandSize)
     {
         List<Card> cards = new List<Card>();
-        for (int i = 0; i < DeckSize; i++)
-        {
-            //Declare player Deck
-            int k = i % DeckCardIDs.Count;
-            cards.Add(Card.Create(DeckCardIDs[k]));
-        }
-        deck = new Deck(cards);
-        cards.Clear();
         for (int i = 0; i < HandSize; i++)
         {
             //Declare player Hand
-            var _deck = this.deck;
-            cards.Add(_deck.Draw());
-            deck = _deck;
+            var deckCopy = _deck;
+            var card = deckCopy.Draw();
+            _deck = deckCopy;
+            cards.Add(card);
         }
         hand = new Hand(cards);
+        return _deck;
 
-    }
-    public override void FixedUpdateNetwork()
-    {
-        base.FixedUpdateNetwork();
-        hand = hand;
-        deck = deck;
     }
     private void OnDestroy()
     {

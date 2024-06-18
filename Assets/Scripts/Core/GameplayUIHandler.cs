@@ -17,6 +17,9 @@ public class GameplayUIHandler : MonoBehaviour
     {
         HandCardVisual.OnCardClicked += CardClicked;
         TurnManager.TurnChanged += OnTurnSwap;
+    }
+    private void Start()
+    {
         foreach (var player in PlayerController.players)
         {
             OnPlayerCreated(player);
@@ -62,6 +65,7 @@ public class GameplayUIHandler : MonoBehaviour
         if (controller.isLocalPlayer)
         {
             _playerController = controller;
+            _playerController.Object.RequestStateAuthority();
             for (int i = 0; i < PlayerCards.Count; i++)
             {
                 HandCardVisual carVisual = PlayerCards[i];

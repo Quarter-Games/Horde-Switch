@@ -16,6 +16,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] TurnManager _turnManagerPrefab;
     [SerializeField] NetworkEvents Callbacks;
     [SerializeField] Button PlayButton;
+    public TurnManager TurnManagerReference;
 
     public PlayerController PlayerPrefab;
     private void Awake()
@@ -48,7 +49,6 @@ public class MainMenuManager : MonoBehaviour
 
     private void PlayerCreated(PlayerController controller)
     {
-        controller.SetUp(new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 }, _gameSettings.gameConfig.PlayerDeckSize, _gameSettings.gameConfig.PlayerStartHandSize);
         if (!controller.isLocalPlayer)
         {
             LoadScene();
@@ -77,7 +77,7 @@ public class MainMenuManager : MonoBehaviour
         StartGameArgs args = new StartGameArgs()
         {
             PlayerCount = 2,
-            GameMode = GameMode.Shared,
+            GameMode = GameMode.AutoHostOrClient,
             SessionName = generateName ? null : RoomNameInputField.text,
             IsVisible = generateName,
             CustomLobbyName = networkRunner.LobbyInfo.Name
@@ -99,31 +99,25 @@ public class MainMenuManager : MonoBehaviour
     }
     private void LoadScene()
     {
-        TurnManager turnMan = null;
         if (networkRunner.LocalPlayer.PlayerId == 1)
         {
 
-            turnMan = networkRunner.Spawn(_turnManagerPrefab, inputAuthority: PlayerRef.None);
-            DontDestroyOnLoad(turnMan);
-            Debug.Log(turnMan.name + " is Created");
+            TurnManagerReference = networkRunner.Spawn(_turnManagerPrefab, inputAuthority: PlayerRef.None);
+            DontDestroyOnLoad(TurnManagerReference);
+            Debug.Log(TurnManagerReference.name + " is Created");
             PlayerController.players[0].isThisTurn = true;
+            PlayerController.players[0].MainRow = 0;
+            PlayerController.players[1].MainRow = 2;
+            PlayerController.players[0].HP = 2;
+            PlayerController.players[1].HP = 2;
+            
         }
-
-        var loading = SceneManager.LoadSceneAsync(1);
-        loading.completed += (AsyncOperation obj) =>
-        {
-            if (turnMan != null)
-            {
-                turnMan.gameSettings = _gameSettings;
-                turnMan.SetUpEnemies();
-            }
-        };
     }
     public void PlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        if (player == runner.LocalPlayer)
+        if (runner.IsServer)
         {
-            var obj = networkRunner.Spawn(PlayerPrefab, new Vector3(0, 1, 0), Quaternion.identity);
+            var obj = networkRunner.Spawn(PlayerPrefab, new Vector3(0, 1, 0), Quaternion.identity, inputAuthority: player);
             obj.PlayerID = player.PlayerId;
             obj.isLocalPlayer = player == networkRunner.LocalPlayer;
         }

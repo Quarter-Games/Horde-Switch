@@ -8,7 +8,7 @@ public struct Card : INetworkStruct
 {
     public static CardResources[] _CardResources;
     public int ID;
-    public CardResources cardValue => _CardResources[ID - 1];
+    public CardResources cardValue => GetCardResourcesByID(ID);
 
     /// <summary>
     /// Factory Method for creating different types of cards based on the data from configs
@@ -32,6 +32,15 @@ public struct Card : INetworkStruct
             default:
                 return new Card(id);
         }
+    }
+    public static CardResources GetCardResourcesByID(int id) 
+    {
+        if (_CardResources == null)
+        {
+            _CardResources = Resources.LoadAll<CardResources>("Cards");
+            _CardResources = _CardResources.ToList().OrderBy(x => x.cardData.ID).ToArray();
+        }
+        return _CardResources[id - 1];
     }
     private Card(int id)
     {

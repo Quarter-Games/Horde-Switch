@@ -78,6 +78,10 @@ public class CardData
     {
         return false;
     }
+    public List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
+    {
+        return enemies.FindAll(x=>x.Card.cardValue.cardData.Value<=Value && x.rowNumber==playerRow);
+    }
     public enum OwnerType
     {
         Player,
