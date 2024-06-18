@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
 {
+    public static event Action<Card> CardDiscarded;
     public static SelectedCards selectedCard = new();
     public Image cardImage;
     public string Card_ID { get; private set; }
@@ -47,6 +48,11 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
         selectedCard.DeselectCard(this);
         cardImage.color = Color.white;
     }
+    public void Use()
+    {
+        DeselectCard();
+        CardDiscarded?.Invoke(CardData);
+    }
 
 }
 public class SelectedCards : List<HandCardVisual>
@@ -84,5 +90,17 @@ public class SelectedCards : List<HandCardVisual>
         if (Count == 0) return new();
         if (Count == 1) return this[0].CardData.cardValue.cardData.GetPossibleEnemies(enemies, playerRow);
         return enemies.FindAll(x => x.Card.cardValue.cardData.Value <= CardValues() && x.rowNumber == playerRow);
+    }
+    new public void Clear()
+    {
+        this.ForEach(x => x.DeselectCard());
+    }
+    public void UseCards()
+    {
+        foreach (var card in this)
+        {
+            card.Use();
+        }
+        base.Clear();
     }
 }

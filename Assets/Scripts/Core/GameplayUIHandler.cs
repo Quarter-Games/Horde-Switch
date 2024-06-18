@@ -16,8 +16,16 @@ public class GameplayUIHandler : MonoBehaviour
     private void OnEnable()
     {
         HandCardVisual.OnCardClicked += CardClicked;
+        HandCardVisual.CardDiscarded += CardDiscarded;
         TurnManager.TurnChanged += OnTurnSwap;
     }
+
+    private void CardDiscarded(Card card)
+    {
+        _playerController.RPC_RemoveCard(card);
+        UpdateCardVisuals();
+    }
+
     private void Start()
     {
         foreach (var player in PlayerController.players)
@@ -41,6 +49,7 @@ public class GameplayUIHandler : MonoBehaviour
             }
             Debug.Log("Opponent Turn");
         }
+        UpdateCardVisuals();
     }
 
     private void CardClicked(HandCardVisual visual)
@@ -51,10 +60,6 @@ public class GameplayUIHandler : MonoBehaviour
         }
     }
 
-    public void AddCard()
-    {
-        _playerController.AddCard();
-    }
     private void Update()
     {
         if (playerAmount != null && _playerController != null) playerAmount.text = $"You have {_playerController.hand.Count} cards";
@@ -66,12 +71,7 @@ public class GameplayUIHandler : MonoBehaviour
         {
             _playerController = controller;
             _playerController.Object.RequestStateAuthority();
-            for (int i = 0; i < PlayerCards.Count; i++)
-            {
-                HandCardVisual carVisual = PlayerCards[i];
-                var card = controller.hand[i];
-                carVisual.SetUpVisual(card);
-            }
+            UpdateCardVisuals();
         }
         else
         {
@@ -84,6 +84,22 @@ public class GameplayUIHandler : MonoBehaviour
             }
         }
     }
+    
+    public void UpdateCardVisuals()
+    {
+        for (int i = 0; i < PlayerCards.Count; i++)
+        {
+            HandCardVisual cardVisual = PlayerCards[i];
+            if (_playerController.hand.Count <= i)
+            {
+                cardVisual.SetUpVisual(new Card());
+                continue;
+            }
+            var card = _playerController.hand[i];
+            cardVisual.SetUpVisual(card);
+        }
+
+    }
 
     public void EndTurn()
     {
@@ -93,6 +109,8 @@ public class GameplayUIHandler : MonoBehaviour
     private void OnDisable()
     {
         HandCardVisual.OnCardClicked -= CardClicked;
+        HandCardVisual.CardDiscarded -= CardDiscarded;
+        TurnManager.TurnChanged -= OnTurnSwap;
     }
 
 }

@@ -23,6 +23,10 @@ public struct Hand : INetworkStruct
     {
         cards.Add(card);
     } 
+    public void RemoveCard(Card card)
+    {
+        cards.Remove(card);
+    }
     public Card this[int index]
     {
         get { return cards[index]; }

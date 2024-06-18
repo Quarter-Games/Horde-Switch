@@ -20,12 +20,19 @@ public class PlayerController : NetworkBehaviour
     {
         isThisTurn = !isThisTurn;
     }
-    public void AddCard()
+    [Rpc]
+    public void RPC_RemoveCard(Card card)
     {
-        Debug.LogWarning("Delete This Method");
-        //var copy = hand;
-        //copy.AddCard(new Card { Value = 1 });
-        //hand = copy;
+        var handCopy = hand;
+        handCopy.RemoveCard(card);
+        hand = handCopy;
+    }
+    public void DrawCard(Deck cards)
+    {
+        var handCopy = hand;
+        handCopy.AddCard(cards.Draw());
+        hand = handCopy;
+
     }
     private void Awake()
     {

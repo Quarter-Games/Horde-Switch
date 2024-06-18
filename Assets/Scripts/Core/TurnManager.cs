@@ -60,8 +60,16 @@ public class TurnManager : NetworkBehaviour
         Enemy.OnEnemyClick += EnemyClick;
         GameplayUIHandler.RequestTurnSwap += EndTurnRequest;
         HandCardVisual.selectedCard.Changed += CardClicked;
+        HandCardVisual.CardDiscarded += RPC_CardDiscarded;
 
-
+    }
+    [Rpc]
+    private void RPC_CardDiscarded(Card card)
+    {
+        if (Runner.LocalPlayer.PlayerId != 1) return;
+        var discard = DiscardPile;
+        discard.AddCard(card);
+        DiscardPile = discard;
     }
 
     private void CardClicked()
@@ -107,6 +115,7 @@ public class TurnManager : NetworkBehaviour
         {
             Debug.Log("Enemy Clicked");
             RPC_KillEnemy(enemy);
+            HandCardVisual.selectedCard.UseCards();
         }
     }
     [Rpc]
@@ -192,7 +201,20 @@ public class TurnManager : NetworkBehaviour
     }
     private void EndTurnRequest()
     {
+        if (_localPlayer.isThisTurn)
+        {
+            _localPlayer.DrawCard(PlayersDeck);
+        }
+        else
+        {
+            _opponentPlayer.DrawCard(PlayersDeck);
+        }
+        var DeckCopy = PlayersDeck;
+        DeckCopy.Draw();
+        PlayersDeck = DeckCopy;
         RPC_TurnSwap();
+
+        
     }
 
     public void RPC_TurnSwap()
@@ -215,5 +237,6 @@ public class TurnManager : NetworkBehaviour
         Enemy.OnEnemyClick -= EnemyClick;
         GameplayUIHandler.RequestTurnSwap -= EndTurnRequest;
         HandCardVisual.selectedCard.Changed -= CardClicked;
+        HandCardVisual.CardDiscarded -= RPC_CardDiscarded;
     }
 }
