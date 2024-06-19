@@ -17,6 +17,14 @@ public struct Deck : INetworkStruct
         }
         Shuffle();
     }
+    public Deck(Deck deck)
+    {
+        foreach (var card in deck.cards)
+        {
+            cards.Add(card);
+        }
+        Shuffle();
+    }
     public void AddCard(Card card)
     {
         cards.Add(card);

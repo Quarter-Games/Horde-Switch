@@ -8,13 +8,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-public class TurnManager : NetworkBehaviour
+public class TurnManager : NetworkBehaviour, IPlayerLeft
 {
     public static TurnManager Instance;
     public GameSettings gameSettings;
     [SerializeField] private PlayerController _localPlayer;
     [SerializeField] private PlayerController _opponentPlayer;
     public static Action<PlayerController> TurnChanged;
+    public static event Action CardStateUpdate;
     [SerializeField] Grid grid;
     [SerializeField] Enemy enemyPrefab;
     [Networked, Capacity(12)] public NetworkLinkedList<Enemy> enemyList => default;
@@ -58,7 +59,7 @@ public class TurnManager : NetworkBehaviour
     private void OnEnable()
     {
         Enemy.OnEnemyClick += EnemyClick;
-        GameplayUIHandler.RequestTurnSwap += EndTurnRequest;
+        GameplayUIHandler.RequestTurnSwap += RPC_EndTurnRequest;
         HandCardVisual.selectedCard.Changed += CardClicked;
         HandCardVisual.CardDiscarded += RPC_CardDiscarded;
 
@@ -114,9 +115,16 @@ public class TurnManager : NetworkBehaviour
         if (HandCardVisual.selectedCard.GetValidEnemies(enemyList.ToList(), _localPlayer.MainRow).Contains(enemy))
         {
             Debug.Log("Enemy Clicked");
-            RPC_KillEnemy(enemy);
+            RPC_SetIfCardWasPlayed(_localPlayer.PlayerID);
             HandCardVisual.selectedCard.UseCards();
+            RPC_KillEnemy(enemy);
         }
+        RPC_UpdateCardState();
+    }
+    [Rpc]
+    public void RPC_UpdateCardState()
+    {
+        CardStateUpdate?.Invoke();
     }
     [Rpc]
     public void RPC_KillEnemy(Enemy enemy)
@@ -146,8 +154,23 @@ public class TurnManager : NetworkBehaviour
         SpawnEnemy(new Vector3Int(xPos, 0, 1));
 
     }
+    [Rpc]
+    public void RPC_SetIfCardWasPlayed(int id)
+    {
+        if (Runner.LocalPlayer.PlayerId != 1) return;
+        if (_localPlayer.PlayerID == id)
+        {
+            _localPlayer.isPlayedInThisTurn = true;
+        }
+        else
+        {
+            _opponentPlayer.isPlayedInThisTurn = true;
+        }
+    }
     private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position)
     {
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
         yield return new WaitForEndOfFrame();
         enemy.transform.position = position;
@@ -193,30 +216,44 @@ public class TurnManager : NetworkBehaviour
         enemy.transform.parent = transform;
         enemy.rowNumber = position.z;
         enemy.columnNumber = position.x;
+        if (enemyDeck.Count == 0)
+        {
+            //Reshuffling Enemy Deck
+            enemyDeck = new(EnemyGraveyard);
+            EnemyGraveyard = new Deck();
+        }
         var _deck = enemyDeck;
         var card = _deck.Draw();
         enemyDeck = _deck;
         enemy.Card = card;
         enemyList.Add(enemy);
     }
-    private void EndTurnRequest()
+    [Rpc]
+    private void RPC_EndTurnRequest()
     {
+        if (Runner.LocalPlayer.PlayerId != 1) return;
+        if (PlayersDeck.Count == 0)
+        {
+            PlayersDeck = new(DiscardPile);
+            DiscardPile = new Deck();
+        }
         if (_localPlayer.isThisTurn)
         {
-            _localPlayer.DrawCard(PlayersDeck);
+            if (_localPlayer.isPlayedInThisTurn) _localPlayer.DrawCard(PlayersDeck);
         }
         else
         {
-            _opponentPlayer.DrawCard(PlayersDeck);
+            if (_opponentPlayer.isPlayedInThisTurn) _opponentPlayer.DrawCard(PlayersDeck);
         }
         var DeckCopy = PlayersDeck;
         DeckCopy.Draw();
         PlayersDeck = DeckCopy;
         RPC_TurnSwap();
+        _localPlayer.isPlayedInThisTurn = false;
+        _opponentPlayer.isPlayedInThisTurn = false;
 
-        
     }
-
+    [Rpc]
     public void RPC_TurnSwap()
     {
         if (PlayerController.players[0].isThisTurn)
@@ -235,8 +272,16 @@ public class TurnManager : NetworkBehaviour
     private void OnDisable()
     {
         Enemy.OnEnemyClick -= EnemyClick;
-        GameplayUIHandler.RequestTurnSwap -= EndTurnRequest;
+        GameplayUIHandler.RequestTurnSwap -= RPC_EndTurnRequest;
         HandCardVisual.selectedCard.Changed -= CardClicked;
         HandCardVisual.CardDiscarded -= RPC_CardDiscarded;
+    }
+
+    public void PlayerLeft(PlayerRef player)
+    {
+        //Doesn't get called. Don't like it:(
+        Debug.Log("Player LEFT");
+        SceneManager.LoadScene("Main Menu");
+        Runner.Despawn(Object);
     }
 }

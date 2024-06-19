@@ -1,6 +1,7 @@
 using Fusion;
 using Fusion.Photon.Realtime;
 using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,9 +34,7 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
     }
     public void LeaveGame()
     {
-        runner.Shutdown();
+        runner.Disconnect(runner.LocalPlayer);
         SceneManager.LoadScene(0);
     }
-
-
 }

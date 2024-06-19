@@ -97,8 +97,10 @@ public class SelectedCards : List<HandCardVisual>
     }
     public void UseCards()
     {
-        foreach (var card in this)
+        SelectedCards list = this;
+        for (int i = list.Count - 1; i >= 0; i--)
         {
+            HandCardVisual card = list[i];
             card.Use();
         }
         base.Clear();

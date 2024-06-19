@@ -18,6 +18,7 @@ public class GameplayUIHandler : MonoBehaviour
         HandCardVisual.OnCardClicked += CardClicked;
         HandCardVisual.CardDiscarded += CardDiscarded;
         TurnManager.TurnChanged += OnTurnSwap;
+        TurnManager.CardStateUpdate += UpdateCardVisuals;
     }
 
     private void CardDiscarded(Card card)
@@ -36,7 +37,7 @@ public class GameplayUIHandler : MonoBehaviour
 
     private void OnTurnSwap(PlayerController controller)
     {
-        
+
         if (controller.isLocalPlayer)
         {
             Debug.Log("Your Turn");
@@ -70,21 +71,14 @@ public class GameplayUIHandler : MonoBehaviour
         if (controller.isLocalPlayer)
         {
             _playerController = controller;
-            _playerController.Object.RequestStateAuthority();
-            UpdateCardVisuals();
         }
         else
         {
             _opponentController = controller;
-            int cards = _opponentController.hand.Count;
-            for (int i = 0; i < EnemyCards.Count; i++)
-            {
-                GameObject card = EnemyCards[i];
-                card.SetActive(i<=cards);
-            }
         }
+        UpdateCardVisuals();
     }
-    
+
     public void UpdateCardVisuals()
     {
         for (int i = 0; i < PlayerCards.Count; i++)
@@ -97,6 +91,18 @@ public class GameplayUIHandler : MonoBehaviour
             }
             var card = _playerController.hand[i];
             cardVisual.SetUpVisual(card);
+        }
+        if (_opponentController == null) return;
+        for (int i = 0; i < EnemyCards.Count; i++)
+        {
+            GameObject cardVisual = EnemyCards[i];
+            Debug.Log("Enemies Card View Changes");
+            if (_opponentController.hand.Count <= i)
+            {
+                cardVisual.SetActive(false);
+                continue;
+            }
+            cardVisual.SetActive(true);
         }
 
     }
@@ -111,6 +117,7 @@ public class GameplayUIHandler : MonoBehaviour
         HandCardVisual.OnCardClicked -= CardClicked;
         HandCardVisual.CardDiscarded -= CardDiscarded;
         TurnManager.TurnChanged -= OnTurnSwap;
+        TurnManager.CardStateUpdate -= UpdateCardVisuals;
     }
 
 }
