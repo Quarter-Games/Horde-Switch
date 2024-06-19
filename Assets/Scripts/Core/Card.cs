@@ -23,14 +23,14 @@ public struct Card : INetworkStruct
             _CardResources = _CardResources.ToList().OrderBy(x => x.cardData.ID).ToArray();
         }
 
-        switch (_CardResources[id].cardData.cardType)
+        switch (_CardResources[id-1].cardData.cardType)
         {
             //case CardResources.CardData.CardType.Creature:
             //    return new CreatureCard { ID = id, Value = CardResources[id].cardData.Value };
             //case CardResources.CardData.CardType.Spell:
             //    return new SpellCard { ID = id, Value = CardResources[id].cardData.Value };
             default:
-                return new Card(id);
+                return new Card(id-1);
         }
     }
     public static CardResources GetCardResourcesByID(int id) 

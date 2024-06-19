@@ -16,6 +16,8 @@ public class TurnManager : NetworkBehaviour, IPlayerLeft
     [SerializeField] private PlayerController _opponentPlayer;
     public static Action<PlayerController> TurnChanged;
     public static event Action CardStateUpdate;
+    public static event Action<PlayerController> PlayerDied;
+    public static event Action<PlayerController> PlayerGotDamage;
     [SerializeField] Grid grid;
     [SerializeField] Enemy enemyPrefab;
     [Networked, Capacity(12)] public NetworkLinkedList<Enemy> enemyList => default;
@@ -182,7 +184,7 @@ public class TurnManager : NetworkBehaviour, IPlayerLeft
         for (int i = 0; i < gameSettings.gameConfig.EnemyDeckSize; i++)
         {
             //Declare enemy Deck
-            int k = (i % 13) + 13;
+            int k = gameSettings.gameConfig.EnemiesCardPull[i % gameSettings.gameConfig.EnemiesCardPull.Count];
             cards.Add(Card.Create(k));
         }
         enemyDeck = new Deck(cards);
@@ -203,7 +205,7 @@ public class TurnManager : NetworkBehaviour, IPlayerLeft
         for (int i = 0; i < gameSettings.gameConfig.PlayerDeckSize; i++)
         {
             //Declare player Hand
-            int k = (i % 13) + 1;
+            int k = gameSettings.gameConfig.PlayerCardPull[i % gameSettings.gameConfig.PlayerCardPull.Count];
             cards.Add(Card.Create(k));
         }
         PlayersDeck = new Deck(cards);
@@ -232,26 +234,59 @@ public class TurnManager : NetworkBehaviour, IPlayerLeft
     private void RPC_EndTurnRequest()
     {
         if (Runner.LocalPlayer.PlayerId != 1) return;
+        if (_localPlayer.isThisTurn)
+        {
+            if (_localPlayer.isPlayedInThisTurn) DrawCardForPlayer(_localPlayer);
+            else
+            {
+                RemovePlayerHealth(_localPlayer);
+            }
+        }
+        else
+        {
+            if (_opponentPlayer.isPlayedInThisTurn) DrawCardForPlayer(_opponentPlayer);
+            else
+            {
+                RemovePlayerHealth(_opponentPlayer);
+            }
+        }
+        RPC_TurnSwap();
+        _localPlayer.isPlayedInThisTurn = false;
+        _opponentPlayer.isPlayedInThisTurn = false;
+
+    }
+    private void RemovePlayerHealth(PlayerController player)
+    {
+        player.HP--;
+        if (player.HP <= 0)
+        {
+            PlayerDied?.Invoke(player);
+            return;
+        }
+
+        while (player.hand.Count > 0)
+        {
+            var card = player.hand[0];
+            player.RPC_RemoveCard(card);
+            RPC_CardDiscarded(card);
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            DrawCardForPlayer(player);
+        }
+        PlayerGotDamage?.Invoke(player);
+    }
+    public void DrawCardForPlayer(PlayerController player)
+    {
         if (PlayersDeck.Count == 0)
         {
             PlayersDeck = new(DiscardPile);
             DiscardPile = new Deck();
         }
-        if (_localPlayer.isThisTurn)
-        {
-            if (_localPlayer.isPlayedInThisTurn) _localPlayer.DrawCard(PlayersDeck);
-        }
-        else
-        {
-            if (_opponentPlayer.isPlayedInThisTurn) _opponentPlayer.DrawCard(PlayersDeck);
-        }
+        player.DrawCard(PlayersDeck);
         var DeckCopy = PlayersDeck;
         DeckCopy.Draw();
         PlayersDeck = DeckCopy;
-        RPC_TurnSwap();
-        _localPlayer.isPlayedInThisTurn = false;
-        _opponentPlayer.isPlayedInThisTurn = false;
-
     }
     [Rpc]
     public void RPC_TurnSwap()

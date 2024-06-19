@@ -90,7 +90,11 @@ public class CardData
     public enum CardType
     {
         Creature,
-        Spell
+        Weapon,
+        Portal,
+        DwarfishPlane,
+        Mine,
+        Sniper
     }
 }
 public class PlayerCardData : CardData

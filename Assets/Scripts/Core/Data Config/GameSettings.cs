@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "GameSettings", menuName = "Scriptable Objects/GameSettings")]
@@ -43,12 +44,18 @@ public class GameSettings : DataBaseSynchronizedScribtableObject
         public int PlayerDeckSize;
         public int EnemyDeckSize;
         public int PlayerStartHandSize;
+        public List<int> PlayerCardPull;
+        public List<int> EnemiesCardPull;
         public GameConfig(List<string> data)
         {
             name = data[0];
             PlayerDeckSize = int.Parse(data[1]);
             EnemyDeckSize = int.Parse(data[2]);
             PlayerStartHandSize = int.Parse(data[3]);
+            var list = data[4].Split(',');
+            PlayerCardPull = new List<int>(list.Select(x => int.Parse(x)));
+            list = data[5].Split(',');
+            EnemiesCardPull = new List<int>(list.Select(x => int.Parse(x)));
         }
         public override string ToString()
         {

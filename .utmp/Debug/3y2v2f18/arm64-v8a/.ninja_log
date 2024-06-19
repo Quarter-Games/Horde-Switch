@@ -1,9 +1,9 @@
 # ninja log v5
-45	1924	7405004227756047	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	4e386e271d735dbe
-35	1929	7405004227776059	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	95be102f4c99798
-59	1944	7405004228036030	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	b76200c849345b05
-8	2003	7405004228632726	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	48b86449bfbd7f0e
-0	2037	7405004228980678	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	46cd282adf1d1c2
-25	2090	7405004229355268	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	d7d83c05212b5804
-17	2156	7405004230135236	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	3edcda70154ca22d
-2163	2334	7405004231926202	C:/Users/danie/Documents/GitHub/Horde Switch/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/3y2v2f18/obj/arm64-v8a/libgame.so	1930813e745a1705
+83	2249	7405048615151623	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	50ae046c4a9e6d81
+69	2301	7405048615431621	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	da19f0ffee1f6051
+101	2307	7405048615841620	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	bdc57e99e0628d1a
+1	2363	7405048616421620	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	a754e89486f01274
+24	2403	7405048616882001	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	814cacce2e9b246f
+59	2454	7405048617451982	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	522f6dbd846d520e
+48	2495	7405048617852320	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	2e8ec153fae4f00c
+2496	2659	7405048619494987	C:/Users/danie/Documents/GitHub/Horde Switch/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/build/intermediates/cxx/Debug/3y2v2f18/obj/arm64-v8a/libgame.so	cebb742340419887
