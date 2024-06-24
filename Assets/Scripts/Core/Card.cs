@@ -30,7 +30,7 @@ public struct Card : INetworkStruct
             //case CardResources.CardData.CardType.Spell:
             //    return new SpellCard { ID = id, Value = CardResources[id].cardData.Value };
             default:
-                return new Card(id-1);
+                return new Card(id);
         }
     }
     public static CardResources GetCardResourcesByID(int id) 

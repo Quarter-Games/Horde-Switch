@@ -60,12 +60,6 @@ public class GameplayUIHandler : MonoBehaviour
             visual.SelectCard();
         }
     }
-
-    private void Update()
-    {
-        if (playerAmount != null && _playerController != null) playerAmount.text = $"You have {_playerController.hand.Count} cards";
-        if (opponentAmount != null && _opponentController != null) opponentAmount.text = $"Opponent has {_opponentController.hand.Count} cards";
-    }
     private void OnPlayerCreated(PlayerController controller)
     {
         if (controller.isLocalPlayer)

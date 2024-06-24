@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class FusionHandler : SimulationBehaviour, IPlayerJoined
+public class FusionHandler : SimulationBehaviour, IPlayerJoined, IPlayerLeft
 {
     [SerializeField] Camera _camera;
     [SerializeField] GameObject _CameraPositionForSecondPLayer;
@@ -36,5 +36,12 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
     {
         runner.Disconnect(runner.LocalPlayer);
         SceneManager.LoadScene(0);
+    }
+    public void PlayerLeft(PlayerRef player)
+    {
+        //Doesn't get called. Don't like it:(
+        Debug.Log("Player LEFT");
+        SceneManager.LoadScene("Main Menu");
+        Runner.Despawn(Object);
     }
 }

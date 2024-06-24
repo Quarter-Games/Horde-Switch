@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-public class TurnManager : NetworkBehaviour, IPlayerLeft
+public class TurnManager : NetworkBehaviour
 {
     public static TurnManager Instance;
     public GameSettings gameSettings;
@@ -184,7 +184,7 @@ public class TurnManager : NetworkBehaviour, IPlayerLeft
         for (int i = 0; i < gameSettings.gameConfig.EnemyDeckSize; i++)
         {
             //Declare enemy Deck
-            int k = gameSettings.gameConfig.EnemiesCardPull[i % gameSettings.gameConfig.EnemiesCardPull.Count];
+            int k = gameSettings.gameConfig.EnemiesCardPull[(i % gameSettings.gameConfig.EnemiesCardPull.Count)+1];
             cards.Add(Card.Create(k));
         }
         enemyDeck = new Deck(cards);
@@ -204,6 +204,7 @@ public class TurnManager : NetworkBehaviour, IPlayerLeft
         var cards = new List<Card>();
         for (int i = 0; i < gameSettings.gameConfig.PlayerDeckSize; i++)
         {
+            
             //Declare player Hand
             int k = gameSettings.gameConfig.PlayerCardPull[i % gameSettings.gameConfig.PlayerCardPull.Count];
             cards.Add(Card.Create(k));
@@ -312,11 +313,4 @@ public class TurnManager : NetworkBehaviour, IPlayerLeft
         HandCardVisual.CardDiscarded -= RPC_CardDiscarded;
     }
 
-    public void PlayerLeft(PlayerRef player)
-    {
-        //Doesn't get called. Don't like it:(
-        Debug.Log("Player LEFT");
-        SceneManager.LoadScene("Main Menu");
-        Runner.Despawn(Object);
-    }
 }
