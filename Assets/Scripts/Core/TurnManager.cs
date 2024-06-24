@@ -184,7 +184,7 @@ public class TurnManager : NetworkBehaviour
         for (int i = 0; i < gameSettings.gameConfig.EnemyDeckSize; i++)
         {
             //Declare enemy Deck
-            int k = gameSettings.gameConfig.EnemiesCardPull[(i % gameSettings.gameConfig.EnemiesCardPull.Count)+1];
+            int k = gameSettings.gameConfig.EnemiesCardPull[i % gameSettings.gameConfig.EnemiesCardPull.Count];
             cards.Add(Card.Create(k));
         }
         enemyDeck = new Deck(cards);
