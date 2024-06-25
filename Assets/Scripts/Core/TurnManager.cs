@@ -128,10 +128,9 @@ public class TurnManager : NetworkBehaviour
     {
         CardStateUpdate?.Invoke();
     }
-    [Rpc]
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_KillEnemy(Enemy enemy)
     {
-        if (Runner.LocalPlayer.PlayerId != 1) return;
         //Remove enemy from list
         var enemies = enemyList;
         enemyList.Remove(enemy);
@@ -148,12 +147,12 @@ public class TurnManager : NetworkBehaviour
         var enemieToMove = enemyList.First(x => x.columnNumber == xPos && x.rowNumber == 1);
         enemieToMove.rowNumber = yPos;
         var pos = grid.CellToWorld(new Vector3Int(xPos, 0, yPos)) - new Vector3Int(1, 0, 0);
-        StartCoroutine(MoveWithDelay(enemieToMove, pos));
-        Debug.Log(pos, enemieToMove);
-
         //Destroy enemy
         Runner.Despawn(enemy.Object);
-        SpawnEnemy(new Vector3Int(xPos, 0, 1));
+
+        StartCoroutine(MoveWithDelay(enemieToMove, pos,xPos));
+        Debug.Log(pos, enemieToMove);
+
 
     }
     [Rpc]
@@ -169,14 +168,16 @@ public class TurnManager : NetworkBehaviour
             _opponentPlayer.isPlayedInThisTurn = true;
         }
     }
-    private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position)
+    private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position,int xPos)
     {
-        yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame();
-        yield return new WaitForEndOfFrame();
+        for (int i = 0; i <= 60; i++)
+        {
+            enemy.transform.position = Vector3.Lerp(enemy.transform.position, position, i/60);
+            yield return new WaitForEndOfFrame();
+        }
         enemy.transform.position = position;
         Debug.Log(enemy.transform.position);
+        SpawnEnemy(new Vector3Int(xPos, 0, 1));
     }
     public void SetUpEnemies()
     {
@@ -204,7 +205,7 @@ public class TurnManager : NetworkBehaviour
         var cards = new List<Card>();
         for (int i = 0; i < gameSettings.gameConfig.PlayerDeckSize; i++)
         {
-            
+
             //Declare player Hand
             int k = gameSettings.gameConfig.PlayerCardPull[i % gameSettings.gameConfig.PlayerCardPull.Count];
             cards.Add(Card.Create(k));
@@ -275,6 +276,11 @@ public class TurnManager : NetworkBehaviour
         {
             DrawCardForPlayer(player);
         }
+        RPC_CallDamageEvent(player);
+    }
+    [Rpc]
+    private void RPC_CallDamageEvent(PlayerController player)
+    {
         PlayerGotDamage?.Invoke(player);
     }
     public void DrawCardForPlayer(PlayerController player)
@@ -289,21 +295,24 @@ public class TurnManager : NetworkBehaviour
         DeckCopy.Draw();
         PlayersDeck = DeckCopy;
     }
-    [Rpc]
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_TurnSwap()
     {
-        if (PlayerController.players[0].isThisTurn)
+        _localPlayer.ChangeTurn();
+        _opponentPlayer.ChangeTurn();
+        if (_localPlayer.isThisTurn)
         {
-            PlayerController.players[0].RPC_ChangeTurn();
-            PlayerController.players[1].RPC_ChangeTurn();
-            TurnChanged?.Invoke(PlayerController.players[1]);
+            RPC_CallTurnChangeEvent(_localPlayer);
         }
         else
         {
-            PlayerController.players[1].RPC_ChangeTurn();
-            PlayerController.players[0].RPC_ChangeTurn();
-            TurnChanged?.Invoke(PlayerController.players[0]);
+            RPC_CallTurnChangeEvent(_opponentPlayer);
         }
+    }
+    [Rpc]
+    private void RPC_CallTurnChangeEvent(PlayerController player)
+    {
+        TurnChanged?.Invoke(player);
     }
     private void OnDisable()
     {

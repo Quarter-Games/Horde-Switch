@@ -21,6 +21,7 @@ public class MainMenuManager : MonoBehaviour
     public PlayerController PlayerPrefab;
     private void Awake()
     {
+        Application.targetFrameRate = 60;
         Callbacks.OnShutdown.AddListener(OnShutdown);
         Callbacks.OnSessionListUpdate.AddListener(SessionsUpdate);
         _gameSettings = Resources.LoadAll<GameSettings>("Game Settings")[0];

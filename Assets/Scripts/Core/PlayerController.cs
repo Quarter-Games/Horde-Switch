@@ -16,8 +16,7 @@ public class PlayerController : NetworkBehaviour
     [Networked] public bool isPlayedInThisTurn { get => default; set { } }
     [ContextMenu("Add Card")]
 
-    [Rpc]
-    public void RPC_ChangeTurn()
+    public void ChangeTurn()
     {
         isThisTurn = !isThisTurn;
     }

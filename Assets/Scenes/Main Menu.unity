@@ -1718,6 +1718,7 @@ MonoBehaviour:
   _turnManagerPrefab: {fileID: 6191694490732602978, guid: 9320ac09e3caa564c8099a7649ee16c1, type: 3}
   Callbacks: {fileID: 1328424561}
   PlayButton: {fileID: 415881972}
+  TurnManagerReference: {fileID: 0}
   PlayerPrefab: {fileID: 8372177336043948876, guid: d0ba7f53f9868f74f9779f8ee06d4902, type: 3}
 --- !u!114 &1842371398
 MonoBehaviour:

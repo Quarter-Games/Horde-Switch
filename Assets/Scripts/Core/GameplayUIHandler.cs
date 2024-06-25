@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using System.Collections;
 
 public class GameplayUIHandler : MonoBehaviour
 {
@@ -11,6 +13,12 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] TMP_Text opponentAmount;
     [SerializeField] List<HandCardVisual> PlayerCards;
     [SerializeField] List<GameObject> EnemyCards;
+    [SerializeField] PlayerUIContainer _localPlayerUIContainer;
+    [SerializeField] PlayerUIContainer _enemyPlayerUIContainer;
+    [SerializeField] TMP_Text TurnText;
+    [SerializeField] Image PopUpWindowParent;
+    [SerializeField] Image PopUpWindow;
+    [SerializeField] TMP_Text PopUpText;
     public static Action RequestTurnSwap;
 
     private void OnEnable()
@@ -19,6 +27,36 @@ public class GameplayUIHandler : MonoBehaviour
         HandCardVisual.CardDiscarded += CardDiscarded;
         TurnManager.TurnChanged += OnTurnSwap;
         TurnManager.CardStateUpdate += UpdateCardVisuals;
+        TurnManager.PlayerGotDamage += UpdateHealth;
+        TurnManager.PlayerDied += OnPlayerDied;
+    }
+
+    private void OnPlayerDied(PlayerController controller)
+    {
+        if (controller == _playerController)
+        {
+            Debug.Log("You Lost");
+            TurnText.text = "You Lost";
+            StartCoroutine(ShowMessage("You Lost"));
+        }
+        else
+        {
+            Debug.Log("You Won");
+            TurnText.text = "You Won";
+            StartCoroutine(ShowMessage("You Won"));
+        }
+    }
+
+    private void UpdateHealth(PlayerController controller)
+    {
+        if (controller == _playerController)
+        {
+            _localPlayerUIContainer.UpdateHealth(controller.HP);
+        }
+        else
+        {
+            _enemyPlayerUIContainer.UpdateHealth(controller.HP);
+        }
     }
 
     private void CardDiscarded(Card card)
@@ -38,9 +76,11 @@ public class GameplayUIHandler : MonoBehaviour
     private void OnTurnSwap(PlayerController controller)
     {
 
-        if (controller.isLocalPlayer)
+        if (controller.isLocalPlayer && controller.isThisTurn)
         {
             Debug.Log("Your Turn");
+            TurnText.text = "Your Turn";
+            StartCoroutine(ShowMessage("Your Turn"));
         }
         else
         {
@@ -49,10 +89,19 @@ public class GameplayUIHandler : MonoBehaviour
                 card.DeselectCard();
             }
             Debug.Log("Opponent Turn");
+            TurnText.text = "Opponent Turn";
+            StartCoroutine(ShowMessage("Opponent Turn"));
         }
         UpdateCardVisuals();
     }
 
+    public IEnumerator ShowMessage(string message)
+    {
+        PopUpWindowParent.gameObject.SetActive(true);
+        PopUpText.text = message;
+        yield return new WaitForSeconds(1);
+        PopUpWindowParent.gameObject.SetActive(false);
+    }
     private void CardClicked(HandCardVisual visual)
     {
         if (_playerController.isThisTurn)
@@ -112,6 +161,34 @@ public class GameplayUIHandler : MonoBehaviour
         HandCardVisual.CardDiscarded -= CardDiscarded;
         TurnManager.TurnChanged -= OnTurnSwap;
         TurnManager.CardStateUpdate -= UpdateCardVisuals;
+        TurnManager.PlayerGotDamage -= UpdateHealth;
+        TurnManager.PlayerDied -= OnPlayerDied;
     }
 
+}
+[Serializable]
+public class PlayerUIContainer
+{
+    public TMPro.TMP_Text PlayerName;
+    public Image PlayerAvatar;
+    public Image FirstHealthIndicator;
+    public Image SecondHealthIndicator;
+    public void UpdateHealth(int health)
+    {
+        if (health == 2)
+        {
+            FirstHealthIndicator.color = Color.red;
+            SecondHealthIndicator.color = Color.red;
+        }
+        else if (health == 1)
+        {
+            FirstHealthIndicator.color = Color.red;
+            SecondHealthIndicator.color = Color.black;
+        }
+        else
+        {
+            FirstHealthIndicator.color = Color.black;
+            SecondHealthIndicator.color = Color.black;
+        }
+    }
 }
