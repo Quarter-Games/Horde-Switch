@@ -38,12 +38,14 @@ public class GameplayUIHandler : MonoBehaviour
             Debug.Log("You Lost");
             TurnText.text = "You Lost";
             StartCoroutine(ShowMessage("You Lost"));
+            _localPlayerUIContainer.UpdateHealth(0);
         }
         else
         {
             Debug.Log("You Won");
             TurnText.text = "You Won";
             StartCoroutine(ShowMessage("You Won"));
+            _enemyPlayerUIContainer.UpdateHealth(0);
         }
     }
 

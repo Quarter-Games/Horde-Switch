@@ -150,7 +150,7 @@ public class TurnManager : NetworkBehaviour
         //Destroy enemy
         Runner.Despawn(enemy.Object);
 
-        StartCoroutine(MoveWithDelay(enemieToMove, pos,xPos));
+        StartCoroutine(MoveWithDelay(enemieToMove, pos, xPos));
         Debug.Log(pos, enemieToMove);
 
 
@@ -168,11 +168,11 @@ public class TurnManager : NetworkBehaviour
             _opponentPlayer.isPlayedInThisTurn = true;
         }
     }
-    private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position,int xPos)
+    private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position, int xPos)
     {
         for (int i = 0; i <= 60; i++)
         {
-            enemy.transform.position = Vector3.Lerp(enemy.transform.position, position, i/60);
+            enemy.transform.position = Vector3.Lerp(enemy.transform.position, position, i / 60);
             yield return new WaitForEndOfFrame();
         }
         enemy.transform.position = position;
@@ -232,16 +232,16 @@ public class TurnManager : NetworkBehaviour
         enemy.Card = card;
         enemyList.Add(enemy);
     }
-    [Rpc]
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     private void RPC_EndTurnRequest()
     {
-        if (Runner.LocalPlayer.PlayerId != 1) return;
         if (_localPlayer.isThisTurn)
         {
             if (_localPlayer.isPlayedInThisTurn) DrawCardForPlayer(_localPlayer);
             else
             {
                 RemovePlayerHealth(_localPlayer);
+                if (_localPlayer.HP <= 0) return;
             }
         }
         else
@@ -250,6 +250,7 @@ public class TurnManager : NetworkBehaviour
             else
             {
                 RemovePlayerHealth(_opponentPlayer);
+                if (_opponentPlayer.HP <= 0) return;
             }
         }
         RPC_TurnSwap();
