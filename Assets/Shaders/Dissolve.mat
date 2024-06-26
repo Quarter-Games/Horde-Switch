@@ -54,11 +54,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Dissolve_Amount: 0.203
-    - _NoiseScale: 20
-    - _Outline_Tickness: 0.1
-    - _Spiral_Strength: 3
+    - _Dissolve_Amount: 0
+    - _NoiseScale: 25
+    - _Outline_Tickness: 0.05
+    - _Spiral_Strength: 1
     m_Colors:
-    - _Outline_Color: {r: 0.067325026, g: 0.43555197, b: 0, a: 0}
+    - _Outline_Color: {r: 0.8745098, g: 0.88882166, b: 1, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
