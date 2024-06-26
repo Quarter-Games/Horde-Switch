@@ -7,7 +7,7 @@ public class CardResources : DataBaseSynchronizedScribtableObject
 {
     public CardData cardData;
     [SerializeField] public Sprite cardSprite;
-    
+
 
 #if UNITY_EDITOR
     [ContextMenu("Pull")]
@@ -66,10 +66,12 @@ public class CardData
         {
             switch (owner)
             {
-                case OwnerType.Player:
+                case CardType.Creature:
+                    return new CreatureCardData(data);
+                case CardType.Portal:
+                    return new PortalCardData(data);
+                default:
                     return new PlayerCardData(data);
-                case OwnerType.Enemy:
-                    return new EnemyCardData(data);
             }
         }
         return new CardData(data);
@@ -78,9 +80,15 @@ public class CardData
     {
         return false;
     }
-    public List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
+    virtual public List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
     {
-        return enemies.FindAll(x=>x.Card.cardValue.cardData.Value<=Value && x.rowNumber==playerRow);
+        return enemies.FindAll(x => x.Card.cardValue.cardData.Value <= Value && x.rowNumber == playerRow);
+    }
+    virtual public void ApplyEffect(TurnManager manager, Enemy enemy)
+    {
+        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
+        HandCardVisual.selectedCard.UseCards();
+        manager.RPC_KillEnemy(enemy);
     }
     public enum OwnerType
     {
@@ -97,15 +105,31 @@ public class CardData
         Sniper
     }
 }
+
+public class PortalCardData : CardData
+{
+    public PortalCardData(List<string> data) : base(data)
+    {
+    }
+    public override bool IsMonoSelectedCard()
+    {
+        return true;
+    }
+    public override List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
+    {
+        return enemies.FindAll(x => x.rowNumber == 0 || x.rowNumber == 2);
+    }
+
+}
 public class PlayerCardData : CardData
 {
     public PlayerCardData(List<string> data) : base(data)
     {
     }
 }
-public class EnemyCardData : CardData
+public class CreatureCardData : CardData
 {
-    public EnemyCardData(List<string> data) : base(data)
+    public CreatureCardData(List<string> data) : base(data)
     {
     }
 }

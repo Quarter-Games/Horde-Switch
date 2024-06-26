@@ -7,6 +7,7 @@ using System.Collections;
 
 public class GameplayUIHandler : MonoBehaviour
 {
+    public static Action RequestTurnSwap;
     [SerializeField] PlayerController _playerController;
     [SerializeField] PlayerController _opponentController;
     [SerializeField] TMP_Text playerAmount;
@@ -19,7 +20,7 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] Image PopUpWindowParent;
     [SerializeField] Image PopUpWindow;
     [SerializeField] TMP_Text PopUpText;
-    public static Action RequestTurnSwap;
+    [SerializeField] Button GameFinishButton;
 
     private void OnEnable()
     {
@@ -37,14 +38,14 @@ public class GameplayUIHandler : MonoBehaviour
         {
             Debug.Log("You Lost");
             TurnText.text = "You Lost";
-            StartCoroutine(ShowMessage("You Lost"));
+            ShowMessageAndEndButton("You Lost");
             _localPlayerUIContainer.UpdateHealth(0);
         }
         else
         {
             Debug.Log("You Won");
             TurnText.text = "You Won";
-            StartCoroutine(ShowMessage("You Won"));
+            ShowMessageAndEndButton("You Won");
             _enemyPlayerUIContainer.UpdateHealth(0);
         }
     }
@@ -82,7 +83,7 @@ public class GameplayUIHandler : MonoBehaviour
         {
             Debug.Log("Your Turn");
             TurnText.text = "Your Turn";
-            StartCoroutine(ShowMessage("Your Turn"));
+            StartCoroutine(ShowAndHideMessage("Your Turn"));
         }
         else
         {
@@ -92,17 +93,23 @@ public class GameplayUIHandler : MonoBehaviour
             }
             Debug.Log("Opponent Turn");
             TurnText.text = "Opponent Turn";
-            StartCoroutine(ShowMessage("Opponent Turn"));
+            StartCoroutine(ShowAndHideMessage("Opponent Turn"));
         }
         UpdateCardVisuals();
     }
 
-    public IEnumerator ShowMessage(string message)
+    public IEnumerator ShowAndHideMessage(string message)
     {
         PopUpWindowParent.gameObject.SetActive(true);
         PopUpText.text = message;
         yield return new WaitForSeconds(1);
         PopUpWindowParent.gameObject.SetActive(false);
+    }
+    public void ShowMessageAndEndButton(string message)
+    {
+        PopUpWindowParent.gameObject.SetActive(true);
+        PopUpText.text = message;
+        GameFinishButton.gameObject.SetActive(true);
     }
     private void CardClicked(HandCardVisual visual)
     {
@@ -166,7 +173,6 @@ public class GameplayUIHandler : MonoBehaviour
         TurnManager.PlayerGotDamage -= UpdateHealth;
         TurnManager.PlayerDied -= OnPlayerDied;
     }
-
 }
 [Serializable]
 public class PlayerUIContainer

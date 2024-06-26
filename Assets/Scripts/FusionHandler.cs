@@ -34,7 +34,10 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined, IPlayerLeft
     }
     public void LeaveGame()
     {
-        runner.Disconnect(runner.LocalPlayer);
+        if (TurnManager.Instance != null)
+        {
+            TurnManager.Instance.RPC_Disconnect(runner.LocalPlayer);
+        }
         SceneManager.LoadScene(0);
     }
     public void PlayerLeft(PlayerRef player)
@@ -42,6 +45,5 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined, IPlayerLeft
         //Doesn't get called. Don't like it:(
         Debug.Log("Player LEFT");
         SceneManager.LoadScene("Main Menu");
-        Runner.Despawn(Object);
     }
 }

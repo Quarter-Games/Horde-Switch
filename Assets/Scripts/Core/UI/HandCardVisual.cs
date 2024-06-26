@@ -1,6 +1,6 @@
 using Fusion;
-using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,13 +11,18 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
 {
     public static event Action<Card> CardDiscarded;
     public static SelectedCards selectedCard = new();
-    public Image cardImage;
+    public static Action<HandCardVisual> OnCardClicked;
     public string Card_ID { get; private set; }
     public Card CardData;
-    public static Action<HandCardVisual> OnCardClicked;
+    [SerializeField] Image cardImage;
+    [SerializeField] Material DisolvingMaterialStart;
+    [SerializeField] Material DisolvingMaterialFinished;
 
     public void SetUpVisual(Card card)
     {
+        Material material = new Material(DisolvingMaterialStart);
+        material.enableInstancing = true;
+        cardImage.material = material;
         CardData = card;
         gameObject.SetActive(card.ID != 0);
         if (card.ID == 0)
@@ -35,7 +40,7 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
     }
     public void SelectCard()
     {
-        if(selectedCard.Contains(this))
+        if (selectedCard.Contains(this))
         {
             DeselectCard();
             return;
@@ -51,6 +56,15 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
     public void Use()
     {
         DeselectCard();
+        StartCoroutine(CardDisolving());
+    }
+    private IEnumerator CardDisolving()
+    {
+        for (int i = 0; i <= 59; i++)
+        {            
+            cardImage.material.Lerp(cardImage.material, DisolvingMaterialFinished, i / 59f);
+            yield return new WaitForEndOfFrame();
+        }
         CardDiscarded?.Invoke(CardData);
     }
 
@@ -85,7 +99,7 @@ public class SelectedCards : List<HandCardVisual>
     {
         return this.Sum(x => x.CardData.cardValue.cardData.Value);
     }
-    public List<Enemy> GetValidEnemies(List<Enemy> enemies,int playerRow)
+    public List<Enemy> GetValidEnemies(List<Enemy> enemies, int playerRow)
     {
         if (Count == 0) return new();
         if (Count == 1) return this[0].CardData.cardValue.cardData.GetPossibleEnemies(enemies, playerRow);

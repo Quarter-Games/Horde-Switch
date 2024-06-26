@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 2d07d8acba2a11247843d38617cf4bc1, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -88,4 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80f5dca3fa25849418cb7ec0130f97d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CardData:
+    ID: 0
   cardImage: {fileID: 3878364874562995885}
+  DisolvingMaterialStart: {fileID: 2100000, guid: 2d07d8acba2a11247843d38617cf4bc1, type: 2}
+  DisolvingMaterialFinished: {fileID: 2100000, guid: c3fd87cae94794f408a9537aab5b9cc2, type: 2}
