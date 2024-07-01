@@ -63,7 +63,7 @@ public class TurnManager : NetworkBehaviour
         GameplayUIHandler.RequestTurnSwap += RPC_EndTurnRequest;
         HandCardVisual.selectedCard.Changed += CardClicked;
         HandCardVisual.CardDiscarded += RPC_CardDiscarded;
-        
+
     }
     private void OnDisable()
     {
@@ -108,6 +108,12 @@ public class TurnManager : NetworkBehaviour
         Debug.Log(pos, enemieToMove);
 
 
+    }
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+    public void RPC_SwapEnemies(Enemy enemy, Enemy secondEnemy)
+    {
+        StartCoroutine(MoveWithDelay(enemy, secondEnemy.transform.position, secondEnemy.rowNumber, false));
+        StartCoroutine(MoveWithDelay(secondEnemy, enemy.transform.position, enemy.rowNumber, false));
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_SetIfCardWasPlayed(int id)
@@ -233,7 +239,7 @@ public class TurnManager : NetworkBehaviour
         }
         RPC_UpdateCardState();
     }
-    private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position, int xPos)
+    private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position, int xPos, bool needToSpawn = true)
     {
         for (int i = 0; i <= 60; i++)
         {
@@ -242,7 +248,7 @@ public class TurnManager : NetworkBehaviour
         }
         enemy.transform.position = position;
         Debug.Log(enemy.transform.position);
-        SpawnEnemy(new Vector3Int(xPos, 0, 1));
+        if (needToSpawn) SpawnEnemy(new Vector3Int(xPos, 0, 1));
     }
     public void SetUpEnemies()
     {

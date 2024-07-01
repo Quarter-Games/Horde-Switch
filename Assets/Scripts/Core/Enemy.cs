@@ -13,6 +13,7 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler
     [Networked] public Card Card { get => default; set { } }
 
     public GameObject enemyModel;
+    public GameObject enemyFloor;
     public TMPro.TMP_Text enemyValue;
     private void Update()
     {
@@ -40,11 +41,13 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler
     {
         if (value)
         {
-            enemyModel.GetComponentInChildren<SkinnedMeshRenderer>().material.color = Color.green;
+            enemyFloor.SetActive(true);
+            //enemyModel.GetComponentInChildren<SkinnedMeshRenderer>().material.color = Color.green;
         }
         else
         {
-            enemyModel.GetComponentInChildren<SkinnedMeshRenderer>().material.color = Color.white;
+            enemyFloor.SetActive(false);
+            //enemyModel.GetComponentInChildren<SkinnedMeshRenderer>().material.color = Color.white;
         }
     }
 }

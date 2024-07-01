@@ -60,11 +60,12 @@ public class CardData
     }
     public static CardData CardDataFactory(List<string> data)
     {
-        if (data.Count <= 3) return new CardData(data);
+        if (data.Count <= 4) return new CardData(data);
 
-        if (Enum.TryParse(typeof(OwnerType), data[3], out var owner))
+        if (Enum.TryParse(typeof(CardType), data[4], out var cardType))
         {
-            switch (owner)
+            Debug.Log($"ID: {data[0]}; Data: {data[4]}");
+            switch (cardType)
             {
                 case CardType.Creature:
                     return new CreatureCardData(data);
@@ -74,6 +75,11 @@ public class CardData
                     return new PlayerCardData(data);
             }
         }
+        else
+        {
+            Debug.LogError("CardType not found");
+            Debug.Log($"ID: {data[0]}; Data: {data[4]}");
+        }
         return new CardData(data);
     }
     virtual public bool IsMonoSelectedCard()
@@ -82,7 +88,12 @@ public class CardData
     }
     virtual public List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
     {
-        return enemies.FindAll(x => x.Card.cardValue.cardData.Value <= Value && x.rowNumber == playerRow);
+        var temp = enemies.FindAll(x => x.Card.cardValue.cardData.Value <= Value && x.rowNumber == playerRow);
+        foreach (var item in temp)
+        {
+            Debug.Log($"Value: {item.Card.cardValue.cardData.Value}; Pos Y and X: {item.columnNumber}, {item.rowNumber}");
+        }
+        return temp;
     }
     virtual public void ApplyEffect(TurnManager manager, Enemy enemy)
     {
@@ -108,6 +119,7 @@ public class CardData
 
 public class PortalCardData : CardData
 {
+    private Enemy ClickedFirst;
     public PortalCardData(List<string> data) : base(data)
     {
     }
@@ -117,7 +129,31 @@ public class PortalCardData : CardData
     }
     public override List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
     {
-        return enemies.FindAll(x => x.rowNumber == 0 || x.rowNumber == 2);
+        var temp = enemies.FindAll(x => x.rowNumber == 0 || x.rowNumber == 2);
+        if (ClickedFirst != null) temp = temp.FindAll(x => x.rowNumber != ClickedFirst.rowNumber);
+        Debug.Log("Portal");
+        foreach (var item in temp)
+        {
+            Debug.Log($"Value: {item.Card.cardValue.cardData.Value}; Pos Y and X: {item.columnNumber}, {item.rowNumber}");
+        }
+        return temp;
+    }
+    public override void ApplyEffect(TurnManager manager, Enemy enemy)
+    {
+        if (ClickedFirst == null)
+        {
+            ClickedFirst = enemy;
+            return;
+        }
+        if (ClickedFirst == enemy)
+        {
+            ClickedFirst = null;
+            return;
+        }
+        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
+        HandCardVisual.selectedCard.UseCards();
+        manager.RPC_SwapEnemies(enemy, ClickedFirst);
+        ClickedFirst = null;
     }
 
 }
