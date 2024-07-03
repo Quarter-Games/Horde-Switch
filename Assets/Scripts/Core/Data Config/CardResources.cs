@@ -9,7 +9,7 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
     abstract public CardData cardData { get; }
     [SerializeField] public Sprite cardSprite;
 
-    
+
 #if UNITY_EDITOR
     public static CardResources Factory(List<string> data)
     {
@@ -161,7 +161,9 @@ public class PortalCardData : CardData
     public override List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
     {
         var temp = enemies.FindAll(x => x.rowNumber == 0 || x.rowNumber == 2);
-        if (ClickedFirst != null) temp = temp.FindAll(x => x.rowNumber != ClickedFirst.rowNumber);
+        if (ClickedFirst != null)
+            temp = temp.FindAll(
+                x => x.rowNumber != ClickedFirst.rowNumber || x.columnNumber == ClickedFirst.columnNumber);
         Debug.Log("Portal");
         foreach (var item in temp)
         {

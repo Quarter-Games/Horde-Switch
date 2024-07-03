@@ -112,8 +112,12 @@ public class TurnManager : NetworkBehaviour
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_SwapEnemies(Enemy enemy, Enemy secondEnemy)
     {
-        StartCoroutine(MoveWithDelay(enemy, secondEnemy.transform.position, secondEnemy.rowNumber, false));
-        StartCoroutine(MoveWithDelay(secondEnemy, enemy.transform.position, enemy.rowNumber, false));
+        var pos1 = secondEnemy.rowNumber;
+        var pos2 = enemy.rowNumber;
+        StartCoroutine(MoveWithDelay(enemy, secondEnemy.transform.position, pos1, false));
+        enemy.rowNumber = pos1;
+        StartCoroutine(MoveWithDelay(secondEnemy, enemy.transform.position, pos2, false));
+        secondEnemy.rowNumber = pos2;
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_SetIfCardWasPlayed(int id)
@@ -238,6 +242,7 @@ public class TurnManager : NetworkBehaviour
             HandCardVisual.selectedCard[0].CardData.cardValue.cardData.ApplyEffect(this, enemy);
         }
         RPC_UpdateCardState();
+        CardClicked();
     }
     private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position, int xPos, bool needToSpawn = true)
     {
@@ -261,7 +266,7 @@ public class TurnManager : NetworkBehaviour
         }
         enemyDeck = new Deck(cards);
         _camera = Camera.main;
-        grid.transform.position = new Vector3(0, 1.5f, -2);
+        grid.transform.position = new Vector3(0, 0.32f, -2);
         for (int i = 0; i < EnemyGridSize.x; i++)
         {
             for (int j = 0; j < EnemyGridSize.y; j++)
@@ -331,7 +336,7 @@ public class TurnManager : NetworkBehaviour
             PlayersDeck = new(DiscardPile);
             DiscardPile = new Deck();
         }
-        player.DrawCard(PlayersDeck);
+        player.RPC_DrawCard(PlayersDeck);
         var DeckCopy = PlayersDeck;
         DeckCopy.Draw();
         PlayersDeck = DeckCopy;

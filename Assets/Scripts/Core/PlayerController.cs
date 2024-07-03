@@ -20,14 +20,15 @@ public class PlayerController : NetworkBehaviour
     {
         isThisTurn = !isThisTurn;
     }
-    [Rpc]
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_RemoveCard(Card card)
     {
         var handCopy = hand;
         handCopy.RemoveCard(card);
         hand = handCopy;
     }
-    public void DrawCard(Deck cards)
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+    public void RPC_DrawCard(Deck cards)
     {
         var handCopy = hand;
         handCopy.AddCard(cards.Draw());
