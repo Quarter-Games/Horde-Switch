@@ -9,13 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ca8f2143fdda04408635a31381b9257, type: 3}
+  m_Script: {fileID: 11500000, guid: 5e3ce7f242bdc2143b656cf53e9a9001, type: 3}
   m_Name: 13
   m_EditorClassIdentifier: 
-  cardData:
+  cardSprite: {fileID: 21300000, guid: 1884bbef3557cc04b877aa4e7144cc8e, type: 3}
+  data:
     ID: 13
     Value: 13
     Name: Nuke
     ownerType: 0
     cardType: 4
-  cardSprite: {fileID: 21300000, guid: 1884bbef3557cc04b877aa4e7144cc8e, type: 3}

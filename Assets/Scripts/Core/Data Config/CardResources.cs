@@ -1,15 +1,45 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static CardData;
 
 [CreateAssetMenu(fileName = "CardResources", menuName = "Config/CardResources")]
-public class CardResources : DataBaseSynchronizedScribtableObject
+abstract public class CardResources : DataBaseSynchronizedScribtableObject
 {
-    public CardData cardData;
+    abstract public CardData cardData { get; }
     [SerializeField] public Sprite cardSprite;
 
-
+    
 #if UNITY_EDITOR
+    public static CardResources Factory(List<string> data)
+    {
+        if (Enum.TryParse(typeof(CardType), data[4], out var cardType))
+        {
+            CardResources cardResources = null;
+            switch (cardType)
+            {
+                case CardType.Creature:
+                    cardResources = CreatureCardResources.Create(data);
+                    break;
+                case CardType.Portal:
+                    cardResources = PortalCardResources.Create(data);
+                    break;
+                case CardType.Weapon:
+                    cardResources = WeaponCardResources.Create(data);
+                    break;
+                default:
+                    cardResources = PlayerCardResources.Create(data);
+                    break;
+            }
+            UnityEditor.AssetDatabase.CreateAsset(cardResources, $"Assets/Resources/Cards/{cardResources.cardData.ID}.asset");
+            return cardResources;
+
+        }
+        else
+        {
+            throw new Exception("CardType not found");
+        }
+    }
     [ContextMenu("Pull")]
     public override async void Pull()
     {
@@ -18,29 +48,28 @@ public class CardResources : DataBaseSynchronizedScribtableObject
         var a = await DataBaseLoader.ReadTableAsync(
             "Cards",
             (s) => s,
-            (list) => CardData.CardDataFactory(list),
+            (list) => Factory(list),
             settings
             );
-        //var assets = UnityEditor.AssetDatabase.FindAssets("t:CardResources");
-        foreach (var card in a)
-        {
-            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{card.Key}.asset");
-            if (asset == null)
-            {
-                CardResources cardResources = CreateInstance<CardResources>();
-                cardResources.cardData = card.Value;
-                UnityEditor.AssetDatabase.CreateAsset(cardResources, $"Assets/Resources/Cards/{card.Key}.asset");
-            }
-            else
-            {
-                asset.cardData = card.Value;
-            }
-            Debug.Log($"Key: {card.Key}, ID: {card.Value.ID}, Value: {card.Value.Value}");
-        }
+        /*//foreach (var card in a)
+        //{
+        //    var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{card.Key}.asset");
+        //    if (asset == null)
+        //    {
+
+        //        CardResources cardResources = CreateInstance<CardResources>();
+        //        cardResources.cardData = card.Value;
+        //        UnityEditor.AssetDatabase.CreateAsset(cardResources, $"Assets/Resources/Cards/{card.Key}.asset");
+        //    }
+        //    else
+        //    {
+        //        asset.cardData = card.Value;
+        //    }
+        //    Debug.Log($"Key: {card.Key}, ID: {card.Value.ID}, Value: {card.Value.Value}");
+        //}*/
     }
 #endif
 }
-
 [Serializable]
 public class CardData
 {
@@ -57,6 +86,8 @@ public class CardData
         if (data.Count > 2) Name = data[2];
         if (data.Count > 3 && Enum.TryParse(typeof(OwnerType), data[3], out var owner)) ownerType = (OwnerType)owner;
         if (data.Count > 4 && Enum.TryParse(typeof(CardType), data[4], out var value)) cardType = (CardType)value;
+        Debug.Log($"ID: {data[0]}; Type: {this.GetType()}");
+
     }
     public static CardData CardDataFactory(List<string> data)
     {
@@ -64,7 +95,6 @@ public class CardData
 
         if (Enum.TryParse(typeof(CardType), data[4], out var cardType))
         {
-            Debug.Log($"ID: {data[0]}; Data: {data[4]}");
             switch (cardType)
             {
                 case CardType.Creature:
@@ -117,9 +147,10 @@ public class CardData
     }
 }
 
+[Serializable]
 public class PortalCardData : CardData
 {
-    private Enemy ClickedFirst;
+    [SerializeField] private Enemy ClickedFirst;
     public PortalCardData(List<string> data) : base(data)
     {
     }
@@ -157,12 +188,14 @@ public class PortalCardData : CardData
     }
 
 }
+[Serializable]
 public class PlayerCardData : CardData
 {
     public PlayerCardData(List<string> data) : base(data)
     {
     }
 }
+[Serializable]
 public class CreatureCardData : CardData
 {
     public CreatureCardData(List<string> data) : base(data)

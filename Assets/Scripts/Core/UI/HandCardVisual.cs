@@ -36,7 +36,7 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         OnCardClicked?.Invoke(this);
-        Debug.Log("Card Selected");
+        Debug.Log("Card Clicked");
     }
     public void SelectCard()
     {
@@ -101,6 +101,7 @@ public class SelectedCards : List<HandCardVisual>
     }
     public List<Enemy> GetValidEnemies(List<Enemy> enemies, int playerRow)
     {
+        Debug.Log(Count);
         if (Count == 0) return new();
         if (Count == 1) return this[0].CardData.cardValue.cardData.GetPossibleEnemies(enemies, playerRow);
         return enemies.FindAll(x => x.Card.cardValue.cardData.Value <= CardValues() && x.rowNumber == playerRow);
