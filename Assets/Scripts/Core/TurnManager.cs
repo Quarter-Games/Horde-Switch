@@ -82,6 +82,14 @@ public class TurnManager : NetworkBehaviour
         var discard = DiscardPile;
         discard.AddCard(card);
         DiscardPile = discard;
+        if (_localPlayer.isThisTurn)
+        {
+            _localPlayer.RPC_RemoveCard(card);
+        }
+        else
+        {
+            _opponentPlayer.RPC_RemoveCard(card);
+        }
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_KillEnemy(Enemy enemy)
@@ -113,12 +121,16 @@ public class TurnManager : NetworkBehaviour
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_SwapEnemies(Enemy enemy, Enemy secondEnemy)
     {
+        var columnNum1 = secondEnemy.columnNumber;
+        var columnNum2 = enemy.columnNumber;
         var pos1 = secondEnemy.rowNumber;
         var pos2 = enemy.rowNumber;
         StartCoroutine(MoveWithDelay(enemy, secondEnemy.transform.position, pos1, false));
         enemy.rowNumber = pos1;
+        enemy.columnNumber = columnNum1;
         StartCoroutine(MoveWithDelay(secondEnemy, enemy.transform.position, pos2, false));
         secondEnemy.rowNumber = pos2;
+        secondEnemy.columnNumber = columnNum2;
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_SetIfCardWasPlayed(int id)
@@ -194,12 +206,18 @@ public class TurnManager : NetworkBehaviour
     [Rpc]
     public void RPC_UpdateCardState()
     {
-        CardStateUpdate?.Invoke();
+        StartCoroutine(RaiseEvent());
+        IEnumerator RaiseEvent()
+        {
+            yield return new WaitForSeconds(0.5f);
+            CardStateUpdate?.Invoke();
+        }
     }
     [Rpc]
     private void RPC_InvokePlayerDieEvent(PlayerController player)
     {
         PlayerDied?.Invoke(player);
+        Runner.Despawn(Object);
     }
     #endregion
 
@@ -238,7 +256,6 @@ public class TurnManager : NetworkBehaviour
         }
         if (HandCardVisual.selectedCard.GetValidEnemies(enemyList.ToList(), _localPlayer.MainRow).Contains(enemy))
         {
-
             Debug.Log("Enemy Clicked");
             HandCardVisual.selectedCard[0].CardData.cardValue.cardData.ApplyEffect(this, enemy);
         }
@@ -248,13 +265,14 @@ public class TurnManager : NetworkBehaviour
     private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position, int xPos, bool needToSpawn = true)
     {
         var time = MovementCurve.keys[MovementCurve.length - 1].time;
-        for (int i = 0; i <= time*60; i++)
+        for (int i = 0; i <= time * 60; i++)
         {
             enemy.transform.position = Vector3.Lerp(enemy.transform.position, position, MovementCurve.Evaluate(i / 60.0f));
             yield return new WaitForFixedUpdate();
         }
         enemy.transform.position = position;
         if (needToSpawn) SpawnEnemy(new Vector3Int(xPos, 0, 1));
+
     }
     public void SetUpEnemies()
     {

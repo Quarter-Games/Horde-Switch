@@ -115,12 +115,16 @@ public class SelectedCards : List<HandCardVisual>
     }
     public void UseCards()
     {
-        SelectedCards list = this;
-        for (int i = list.Count - 1; i >= 0; i--)
+        for (int i = Count - 1; i >= 0; i--)
         {
-            HandCardVisual card = list[i];
-            card.Use();
+            this[i].Use();
         }
-        base.Clear();
+        Clear();
+    }
+    public void UseRandomCard()
+    {
+        var list = this;
+        list[UnityEngine.Random.Range(0, list.Count)].Use();
+        Clear();
     }
 }

@@ -6,8 +6,10 @@ using UnityEngine.EventSystems;
 
 public class Enemy : NetworkBehaviour, IPointerClickHandler
 {
+    public static event Action MinePlaced;
     public static Action<Enemy, PointerEventData> OnEnemyClick;
     public NetworkTransform networkTransform;
+    [Networked] public bool HasMine { get => default; set { } }
     [Networked] public int rowNumber { get => default; set { } }
     [Networked] public int columnNumber { get => default; set { } }
     [Networked] public Card Card { get => default; set { } }
@@ -42,12 +44,38 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler
         if (value)
         {
             enemyFloor.SetActive(true);
-            //enemyModel.GetComponentInChildren<SkinnedMeshRenderer>().material.color = Color.green;
         }
         else
         {
             enemyFloor.SetActive(false);
-            //enemyModel.GetComponentInChildren<SkinnedMeshRenderer>().material.color = Color.white;
         }
+    }
+    public void PlaceMine()
+    {
+        RPC_SetMine();
+        //TODO: Add visuals for the player, that put the mine
+    }
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+    private void RPC_SetMine()
+    {
+        HasMine = true;
+        RPC_RaiseMinePlaceEvent();
+    }
+    [Rpc]
+    private void RPC_RaiseMinePlaceEvent()
+    {
+        MinePlaced?.Invoke();
+    }
+
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+    public void RPC_RemoveMine()
+    {
+        HasMine = false;
+        RPC_RemoveMineVisual();
+    }
+    [Rpc]
+    private void RPC_RemoveMineVisual()
+    {
+
     }
 }

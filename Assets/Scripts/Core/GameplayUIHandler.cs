@@ -30,6 +30,12 @@ public class GameplayUIHandler : MonoBehaviour
         TurnManager.CardStateUpdate += UpdateCardVisuals;
         TurnManager.PlayerGotDamage += UpdateHealth;
         TurnManager.PlayerDied += OnPlayerDied;
+        Enemy.MinePlaced += Enemy_MinePlaced;
+    }
+
+    private void Enemy_MinePlaced()
+    {
+       StartCoroutine(ShowAndHideMessage("Mine placed"));
     }
 
     private void OnPlayerDied(PlayerController controller)
@@ -64,7 +70,6 @@ public class GameplayUIHandler : MonoBehaviour
 
     private void CardDiscarded(Card card)
     {
-        _playerController.RPC_RemoveCard(card);
         UpdateCardVisuals();
     }
 
@@ -148,7 +153,6 @@ public class GameplayUIHandler : MonoBehaviour
         for (int i = 0; i < EnemyCards.Count; i++)
         {
             GameObject cardVisual = EnemyCards[i];
-            Debug.Log("Enemies Card View Changes");
             if (_opponentController.hand.Count <= i)
             {
                 cardVisual.SetActive(false);
@@ -172,6 +176,7 @@ public class GameplayUIHandler : MonoBehaviour
         TurnManager.CardStateUpdate -= UpdateCardVisuals;
         TurnManager.PlayerGotDamage -= UpdateHealth;
         TurnManager.PlayerDied -= OnPlayerDied;
+        Enemy.MinePlaced -= Enemy_MinePlaced;
     }
 }
 [Serializable]

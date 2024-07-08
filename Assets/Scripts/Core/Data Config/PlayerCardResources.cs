@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCardResources : CardResources
@@ -12,5 +13,13 @@ public class PlayerCardResources : CardResources
         PlayerCardResources cardResources = CreateInstance<PlayerCardResources>();
         cardResources.data = new PlayerCardData(data);
         return cardResources;
+    }
+}
+
+[Serializable]
+public class PlayerCardData : CardData
+{
+    public PlayerCardData(List<string> data) : base(data)
+    {
     }
 }

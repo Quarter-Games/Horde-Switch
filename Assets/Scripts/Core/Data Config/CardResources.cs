@@ -1,3 +1,4 @@
+using Assets.Scripts.Core.Data_Config;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,9 +28,18 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
                 case CardType.Weapon:
                     cardResources = WeaponCardResources.Create(data);
                     break;
+                case CardType.Mine:
+                    cardResources = MineCardResource.Create(data);
+                    break;
                 default:
                     cardResources = PlayerCardResources.Create(data);
                     break;
+            }
+
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{cardResources.cardData.ID}.asset");
+            if (asset != null)
+            {
+                cardResources.cardSprite = asset.cardSprite;
             }
             UnityEditor.AssetDatabase.CreateAsset(cardResources, $"Assets/Resources/Cards/{cardResources.cardData.ID}.asset");
             return cardResources;
@@ -51,22 +61,6 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
             (list) => Factory(list),
             settings
             );
-        /*//foreach (var card in a)
-        //{
-        //    var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{card.Key}.asset");
-        //    if (asset == null)
-        //    {
-
-        //        CardResources cardResources = CreateInstance<CardResources>();
-        //        cardResources.cardData = card.Value;
-        //        UnityEditor.AssetDatabase.CreateAsset(cardResources, $"Assets/Resources/Cards/{card.Key}.asset");
-        //    }
-        //    else
-        //    {
-        //        asset.cardData = card.Value;
-        //    }
-        //    Debug.Log($"Key: {card.Key}, ID: {card.Value.ID}, Value: {card.Value.Value}");
-        //}*/
     }
 #endif
 }
@@ -128,8 +122,17 @@ public class CardData
     virtual public void ApplyEffect(TurnManager manager, Enemy enemy)
     {
         manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
-        HandCardVisual.selectedCard.UseCards();
-        manager.RPC_KillEnemy(enemy);
+        Debug.Log($"Is enemy has mine on it: {enemy.HasMine}");
+        if (!enemy.HasMine)
+        {
+            HandCardVisual.selectedCard.UseCards();
+            manager.RPC_KillEnemy(enemy);
+        }
+        else
+        {
+            HandCardVisual.selectedCard.UseRandomCard();
+            enemy.RPC_RemoveMine();
+        }
     }
     public enum OwnerType
     {
@@ -144,63 +147,5 @@ public class CardData
         DwarfishPlane,
         Mine,
         Sniper
-    }
-}
-
-[Serializable]
-public class PortalCardData : CardData
-{
-    [SerializeField] private Enemy ClickedFirst;
-    public PortalCardData(List<string> data) : base(data)
-    {
-    }
-    public override bool IsMonoSelectedCard()
-    {
-        return true;
-    }
-    public override List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
-    {
-        var temp = enemies.FindAll(x => x.rowNumber == 0 || x.rowNumber == 2);
-        if (ClickedFirst != null)
-            temp = temp.FindAll(
-                x => x.rowNumber != ClickedFirst.rowNumber || x.columnNumber == ClickedFirst.columnNumber);
-        Debug.Log("Portal");
-        foreach (var item in temp)
-        {
-            Debug.Log($"Value: {item.Card.cardValue.cardData.Value}; Pos Y and X: {item.columnNumber}, {item.rowNumber}");
-        }
-        return temp;
-    }
-    public override void ApplyEffect(TurnManager manager, Enemy enemy)
-    {
-        if (ClickedFirst == null)
-        {
-            ClickedFirst = enemy;
-            return;
-        }
-        if (ClickedFirst == enemy)
-        {
-            ClickedFirst = null;
-            return;
-        }
-        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
-        HandCardVisual.selectedCard.UseCards();
-        manager.RPC_SwapEnemies(enemy, ClickedFirst);
-        ClickedFirst = null;
-    }
-
-}
-[Serializable]
-public class PlayerCardData : CardData
-{
-    public PlayerCardData(List<string> data) : base(data)
-    {
-    }
-}
-[Serializable]
-public class CreatureCardData : CardData
-{
-    public CreatureCardData(List<string> data) : base(data)
-    {
     }
 }
