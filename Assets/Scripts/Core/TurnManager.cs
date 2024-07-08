@@ -15,6 +15,7 @@ public class TurnManager : NetworkBehaviour
     public static event Action<PlayerController> PlayerGotDamage;
     public static TurnManager Instance { get; set; }
     public GameSettings gameSettings;
+    [SerializeField] AnimationCurve MovementCurve;
     [SerializeField] private PlayerController _localPlayer;
     [SerializeField] private PlayerController _opponentPlayer;
     [SerializeField] Grid grid;
@@ -246,13 +247,13 @@ public class TurnManager : NetworkBehaviour
     }
     private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position, int xPos, bool needToSpawn = true)
     {
-        for (int i = 0; i <= 60; i++)
+        var time = MovementCurve.keys[MovementCurve.length - 1].time;
+        for (int i = 0; i <= time*60; i++)
         {
-            enemy.transform.position = Vector3.Lerp(enemy.transform.position, position, i / 60);
-            yield return new WaitForEndOfFrame();
+            enemy.transform.position = Vector3.Lerp(enemy.transform.position, position, MovementCurve.Evaluate(i / 60.0f));
+            yield return new WaitForFixedUpdate();
         }
         enemy.transform.position = position;
-        Debug.Log(enemy.transform.position);
         if (needToSpawn) SpawnEnemy(new Vector3Int(xPos, 0, 1));
     }
     public void SetUpEnemies()

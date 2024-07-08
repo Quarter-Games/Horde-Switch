@@ -61,7 +61,7 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
     private IEnumerator CardDisolving()
     {
         for (int i = 0; i <= 59; i++)
-        {            
+        {
             cardImage.material.Lerp(cardImage.material, DisolvingMaterialFinished, i / 59f);
             yield return new WaitForEndOfFrame();
         }
@@ -76,23 +76,23 @@ public class SelectedCards : List<HandCardVisual>
     {
         if (this.Any(x => x.CardData.cardValue.cardData.IsMonoSelectedCard()))
         {
-            this.ForEach(x => x.DeselectCard());
-            this.Add(card);
+            Clear();
+            Add(card);
         }
         else
         {
             if (card.CardData.cardValue.cardData.IsMonoSelectedCard())
             {
-                this.ForEach(x => x.DeselectCard());
+                Clear();
             }
-            this.Add(card);
+            Add(card);
         }
         Changed?.Invoke();
         Debug.Log(CardValues());
     }
     public void DeselectCard(HandCardVisual card)
     {
-        this.Remove(card);
+        Remove(card);
         Changed?.Invoke();
     }
     public int CardValues()
@@ -108,7 +108,10 @@ public class SelectedCards : List<HandCardVisual>
     }
     new public void Clear()
     {
-        this.ForEach(x => x.DeselectCard());
+        for (int i = Count - 1; i >= 0; i--)
+        {
+            this[i].DeselectCard();
+        }
     }
     public void UseCards()
     {
