@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 public class TurnManager : NetworkBehaviour
 {
@@ -13,6 +14,7 @@ public class TurnManager : NetworkBehaviour
     public static event Action CardStateUpdate;
     public static event Action<PlayerController> PlayerDied;
     public static event Action<PlayerController> PlayerGotDamage;
+    [SerializeField] List<GameObject> GridTiles;
     public static TurnManager Instance { get; set; }
     public GameSettings gameSettings;
     [SerializeField] AnimationCurve MovementCurve;
@@ -113,7 +115,7 @@ public class TurnManager : NetworkBehaviour
         //Destroy enemy
         Runner.Despawn(enemy.Object);
 
-        StartCoroutine(MoveWithDelay(enemieToMove, pos, xPos));
+        StartCoroutine(MoveWithDelay(enemieToMove, new(xPos, 0, yPos), xPos));
         Debug.Log(pos, enemieToMove);
 
 
@@ -125,10 +127,10 @@ public class TurnManager : NetworkBehaviour
         var columnNum2 = enemy.columnNumber;
         var pos1 = secondEnemy.rowNumber;
         var pos2 = enemy.rowNumber;
-        StartCoroutine(MoveWithDelay(enemy, secondEnemy.transform.position, pos1, false));
+        StartCoroutine(MoveWithDelay(enemy, new Vector3(columnNum1, 0, pos1), pos1, false));
         enemy.rowNumber = pos1;
         enemy.columnNumber = columnNum1;
-        StartCoroutine(MoveWithDelay(secondEnemy, enemy.transform.position, pos2, false));
+        StartCoroutine(MoveWithDelay(secondEnemy, new Vector3(columnNum2, 0, pos2), pos2, false));
         secondEnemy.rowNumber = pos2;
         secondEnemy.columnNumber = columnNum2;
     }
@@ -226,6 +228,7 @@ public class TurnManager : NetworkBehaviour
         var enemies = HandCardVisual.selectedCard.GetValidEnemies(enemyList.ToList(), _localPlayer.MainRow);
         foreach (var enemy in enemyList)
         {
+            enemy.enemyFloor = GridTiles[11 - ((enemy.rowNumber) * 4 + enemy.columnNumber + 1)];
             enemy.HighLight(enemies.Contains(enemy));
         }
 
@@ -264,13 +267,15 @@ public class TurnManager : NetworkBehaviour
     }
     private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position, int xPos, bool needToSpawn = true)
     {
+        Vector3 WorldPos = (GridTiles[11 - ((int)(position.z) * 4 + (int)position.x + 1)].transform.position + GridTiles[11 - ((int)(position.z) * 4 + (int)position.x + 1)].transform.right);
+        WorldPos -= new Vector3(1, 0, 0);
         var time = MovementCurve.keys[MovementCurve.length - 1].time;
         for (int i = 0; i <= time * 60; i++)
         {
-            enemy.transform.position = Vector3.Lerp(enemy.transform.position, position, MovementCurve.Evaluate(i / 60.0f));
+            enemy.transform.position = Vector3.Lerp(enemy.transform.position, WorldPos, MovementCurve.Evaluate(i / 60.0f));
             yield return new WaitForFixedUpdate();
         }
-        enemy.transform.position = position;
+        enemy.transform.position = WorldPos;
         if (needToSpawn) SpawnEnemy(new Vector3Int(xPos, 0, 1));
 
     }
@@ -290,6 +295,7 @@ public class TurnManager : NetworkBehaviour
         {
             for (int j = 0; j < EnemyGridSize.y; j++)
             {
+
                 Vector3Int position = new Vector3Int(i - 1, 0, j);
                 SpawnEnemy(position);
             }
@@ -309,7 +315,10 @@ public class TurnManager : NetworkBehaviour
     }
     public void SpawnEnemy(Vector3Int position)
     {
-        var WorldPos = grid.CellToWorld(position);
+
+        Vector3 WorldPos = (GridTiles[11 - ((position.z) * 4 + position.x + 1)].transform.position + GridTiles[11 - ((position.z) * 4 + position.x + 1)].transform.right);
+        //Vector3Int position = new Vector3Int((int)pos.x, (int)pos.y, (int)pos.z);
+        //var WorldPos = grid.CellToWorld(position);
         WorldPos -= new Vector3(1f, 0, 0);
         var enemy = Runner.Spawn(enemyPrefab, position: WorldPos, rotation: Quaternion.identity, PlayerRef.MasterClient);
         enemy.transform.parent = transform;

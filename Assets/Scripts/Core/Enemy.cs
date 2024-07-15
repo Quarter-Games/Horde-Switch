@@ -17,6 +17,8 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler
     public GameObject enemyModel;
     public GameObject enemyFloor;
     public TMPro.TMP_Text enemyValue;
+    public Material ReadyMaterial;
+    public Material NotReadyMaterial;
     private void Update()
     {
         if (Card.ID == 0) return;
@@ -43,11 +45,12 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler
     {
         if (value)
         {
-            enemyFloor.SetActive(true);
+            enemyFloor.GetComponentsInChildren<MeshRenderer>()[0].material = ReadyMaterial;
         }
         else
         {
-            enemyFloor.SetActive(false);
+            enemyFloor.GetComponentsInChildren<MeshRenderer>()[0].material = NotReadyMaterial;
+
         }
     }
     public void PlaceMine()
