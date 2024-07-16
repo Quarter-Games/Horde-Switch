@@ -3913,6 +3913,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Card Visuals (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 879270044124682958, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7223321123169581097, guid: c8cf1eaaa4792ff4b80ca10132ea59ba, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

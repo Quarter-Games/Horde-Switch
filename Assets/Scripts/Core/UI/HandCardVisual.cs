@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
+public class HandCardVisual : MonoBehaviour, IPointerClickHandler
 {
     public static event Action<Card> CardDiscarded;
     public static SelectedCards selectedCard = new();
@@ -24,7 +24,7 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
         material.enableInstancing = true;
         cardImage.material = material;
         CardData = card;
-        gameObject.SetActive(card.ID != 0);
+        cardImage.enabled = card.ID != 0;
         if (card.ID == 0)
         {
             return;
@@ -36,7 +36,6 @@ public class HandCardVisual : NetworkBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         OnCardClicked?.Invoke(this);
-        Debug.Log("Card Clicked");
     }
     public void SelectCard()
     {
@@ -88,7 +87,6 @@ public class SelectedCards : List<HandCardVisual>
             Add(card);
         }
         Changed?.Invoke();
-        Debug.Log(CardValues());
     }
     public void DeselectCard(HandCardVisual card)
     {
@@ -101,7 +99,6 @@ public class SelectedCards : List<HandCardVisual>
     }
     public List<Enemy> GetValidEnemies(List<Enemy> enemies, int playerRow)
     {
-        Debug.Log(Count);
         if (Count == 0) return new();
         if (Count == 1) return this[0].CardData.cardValue.cardData.GetPossibleEnemies(enemies, playerRow);
         return enemies.FindAll(x => x.Card.cardValue.cardData.Value <= CardValues() && x.rowNumber == playerRow);
@@ -117,9 +114,9 @@ public class SelectedCards : List<HandCardVisual>
     {
         for (int i = Count - 1; i >= 0; i--)
         {
+            Debug.Log(Count);
             this[i].Use();
         }
-        Clear();
     }
     public void UseRandomCard()
     {

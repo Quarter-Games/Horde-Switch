@@ -113,10 +113,6 @@ public class CardData
     virtual public List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
     {
         var temp = enemies.FindAll(x => x.Card.cardValue.cardData.Value <= Value && x.rowNumber == playerRow);
-        foreach (var item in temp)
-        {
-            Debug.Log($"Value: {item.Card.cardValue.cardData.Value}; Pos Y and X: {item.columnNumber}, {item.rowNumber}");
-        }
         return temp;
     }
     virtual public void ApplyEffect(TurnManager manager, Enemy enemy)

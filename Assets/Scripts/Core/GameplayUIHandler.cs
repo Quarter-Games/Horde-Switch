@@ -25,7 +25,6 @@ public class GameplayUIHandler : MonoBehaviour
     private void OnEnable()
     {
         HandCardVisual.OnCardClicked += CardClicked;
-        HandCardVisual.CardDiscarded += CardDiscarded;
         TurnManager.TurnChanged += OnTurnSwap;
         TurnManager.CardStateUpdate += UpdateCardVisuals;
         TurnManager.PlayerGotDamage += UpdateHealth;
@@ -66,11 +65,6 @@ public class GameplayUIHandler : MonoBehaviour
         {
             _enemyPlayerUIContainer.UpdateHealth(controller.HP);
         }
-    }
-
-    private void CardDiscarded(Card card)
-    {
-        UpdateCardVisuals();
     }
 
     private void Start()
@@ -171,7 +165,6 @@ public class GameplayUIHandler : MonoBehaviour
     private void OnDisable()
     {
         HandCardVisual.OnCardClicked -= CardClicked;
-        HandCardVisual.CardDiscarded -= CardDiscarded;
         TurnManager.TurnChanged -= OnTurnSwap;
         TurnManager.CardStateUpdate -= UpdateCardVisuals;
         TurnManager.PlayerGotDamage -= UpdateHealth;

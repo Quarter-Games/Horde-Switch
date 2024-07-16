@@ -92,6 +92,9 @@ public class TurnManager : NetworkBehaviour
         {
             _opponentPlayer.RPC_RemoveCard(card);
         }
+        RPC_UpdateCardState();
+
+
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_KillEnemy(Enemy enemy)
@@ -208,12 +211,7 @@ public class TurnManager : NetworkBehaviour
     [Rpc]
     public void RPC_UpdateCardState()
     {
-        StartCoroutine(RaiseEvent());
-        IEnumerator RaiseEvent()
-        {
-            yield return new WaitForSeconds(0.5f);
-            CardStateUpdate?.Invoke();
-        }
+        CardStateUpdate?.Invoke();
     }
     [Rpc]
     private void RPC_InvokePlayerDieEvent(PlayerController player)
@@ -259,7 +257,6 @@ public class TurnManager : NetworkBehaviour
         }
         if (HandCardVisual.selectedCard.GetValidEnemies(enemyList.ToList(), _localPlayer.MainRow).Contains(enemy))
         {
-            Debug.Log("Enemy Clicked");
             HandCardVisual.selectedCard[0].CardData.cardValue.cardData.ApplyEffect(this, enemy);
         }
         RPC_UpdateCardState();
@@ -348,7 +345,6 @@ public class TurnManager : NetworkBehaviour
         while (player.hand.Count > 0)
         {
             var card = player.hand[0];
-            player.RPC_RemoveCard(card);
             RPC_CardDiscarded(card);
         }
         for (int i = 0; i < 4; i++)

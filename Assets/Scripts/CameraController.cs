@@ -14,5 +14,6 @@ public class CameraController : MonoBehaviour
     {
         var ratio = 1/_camera.aspect;
         transform.localPosition = new Vector3(0, 0, -ratio);
+
     }
 }
