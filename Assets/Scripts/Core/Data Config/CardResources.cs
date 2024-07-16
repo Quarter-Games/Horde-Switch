@@ -7,6 +7,8 @@ using static CardData;
 [CreateAssetMenu(fileName = "CardResources", menuName = "Config/CardResources")]
 abstract public class CardResources : DataBaseSynchronizedScribtableObject
 {
+
+    public AudioClip OnBeingPlayed;
     abstract public CardData cardData { get; }
     [SerializeField] public Sprite cardSprite;
 

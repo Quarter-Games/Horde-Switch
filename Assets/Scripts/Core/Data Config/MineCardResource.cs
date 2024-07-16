@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Assets.Scripts.Core.Data_Config
 {
-    internal class MineCardResource : CardResources
+    internal class MineCardResource : PlayerCardResources
     {
-        [SerializeField] protected MineCardData data;
+        [SerializeField] new protected MineCardData data;
         public override CardData cardData { get => data; }
         public static MineCardResource Create(List<string> data)
         {

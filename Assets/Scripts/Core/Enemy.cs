@@ -1,10 +1,11 @@
+using Assets.Scripts.SoundSystem;
 using Fusion;
 using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Enemy : NetworkBehaviour, IPointerClickHandler
+public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
 {
     public static event Action MinePlaced;
     public static Action<Enemy, PointerEventData> OnEnemyClick;
@@ -19,6 +20,11 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler
     public TMPro.TMP_Text enemyValue;
     public Material ReadyMaterial;
     public Material NotReadyMaterial;
+    public override void Spawned()
+    {
+        base.Spawned();
+        IEffectPlayer.OnPlaySFX?.Invoke(Card.cardValue.OnBeingPlayed);
+    }
     private void Update()
     {
         if (Card.ID == 0) return;

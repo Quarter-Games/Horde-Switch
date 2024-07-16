@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponCardResources : CardResources
+public class WeaponCardResources : PlayerCardResources
 {
-    [SerializeField] protected PlayerCardData data;
+    [SerializeField] new protected PlayerCardData data;
 
     public override CardData cardData { get => data; }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerCardResources : CardResources
 {
-    [SerializeField] protected PlayerCardData data;
+    protected PlayerCardData data;
 
     public override CardData cardData { get => data; }
 

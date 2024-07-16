@@ -6,6 +6,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GameSettings", menuName = "Scriptable Objects/GameSettings")]
 public class GameSettings : DataBaseSynchronizedScribtableObject
 {
+    public AudioClip ShuffleSound;//Not used
+    public AudioClip DrawCardSound; //Not used
+    public AudioClip EnemyDiedSound; //Not used
+    public AudioClip HPLostSound;
     public GameConfig gameConfig;
 #if UNITY_EDITOR
     [ContextMenu("Pull")]

@@ -1,3 +1,4 @@
+using Assets.Scripts.SoundSystem;
 using Fusion;
 using System;
 using System.Collections;
@@ -7,7 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class HandCardVisual : MonoBehaviour, IPointerClickHandler
+public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
 {
     public static event Action<Card> CardDiscarded;
     public static SelectedCards selectedCard = new();
@@ -54,6 +55,8 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler
     }
     public void Use()
     {
+
+        IEffectPlayer.OnPlaySFX?.Invoke(CardData.cardValue.OnBeingPlayed);
         DeselectCard();
         StartCoroutine(CardDisolving());
     }

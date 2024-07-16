@@ -1,3 +1,4 @@
+using Assets.Scripts.SoundSystem;
 using Fusion;
 using NUnit.Framework;
 using System;
@@ -8,7 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
-public class TurnManager : NetworkBehaviour
+public class TurnManager : NetworkBehaviour,IEffectPlayer
 {
     public static Action<PlayerController> TurnChanged;
     public static event Action CardStateUpdate;
@@ -201,6 +202,8 @@ public class TurnManager : NetworkBehaviour
     [Rpc]
     private void RPC_CallDamageEvent(PlayerController player)
     {
+        IEffectPlayer.OnPlaySFX?.Invoke(gameSettings.HPLostSound);
+
         PlayerGotDamage?.Invoke(player);
     }
     [Rpc]

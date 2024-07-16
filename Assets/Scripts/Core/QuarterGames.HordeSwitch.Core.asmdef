@@ -1,9 +1,10 @@
 {
-    "name": "Core",
+    "name": "QuarterGames.HordeSwitch.Core",
     "rootNamespace": "",
     "references": [
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:2cf029f2a706f3c46b68a3a73e58125f"
+        "GUID:2cf029f2a706f3c46b68a3a73e58125f",
+        "GUID:75bda30419d386a4abc6b0cb0846fcd8"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

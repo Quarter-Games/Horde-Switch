@@ -1,5 +1,5 @@
 {
-    "name": "DataBase-Editor",
+    "name": "QuarterGames.DataBase.Editor",
     "rootNamespace": "",
     "references": [
         "GUID:2cf029f2a706f3c46b68a3a73e58125f"

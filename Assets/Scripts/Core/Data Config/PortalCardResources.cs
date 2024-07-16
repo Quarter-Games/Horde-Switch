@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PortalCardResources : CardResources
+public class PortalCardResources : PlayerCardResources
 {
-    [SerializeField] protected PortalCardData data;
+    [SerializeField] new protected PortalCardData data;
 
     public override CardData cardData { get => data; }
 

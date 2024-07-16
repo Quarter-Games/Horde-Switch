@@ -14,7 +14,6 @@ public class PlayerController : NetworkBehaviour
     [Networked] public Hand hand { get => default; set { } }
     [Networked] public int HP { get => default; set { } }
     [Networked] public bool isPlayedInThisTurn { get => default; set { } }
-    [ContextMenu("Add Card")]
 
     public void ChangeTurn()
     {
