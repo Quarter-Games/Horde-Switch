@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PortalCardResources : PlayerCardResources
+public class PortalCardResources : CardResources
 {
     [SerializeField] new protected PortalCardData data;
 

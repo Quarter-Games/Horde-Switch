@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f61d03bec6f37f44ba19c3c501fb85c8, type: 3}
   m_Name: 3
   m_EditorClassIdentifier: 
+  OnBeingPlayed: {fileID: 0}
   cardSprite: {fileID: 21300000, guid: be134c4db38eec948a7565d57c176f60, type: 3}
   data:
     ID: 3

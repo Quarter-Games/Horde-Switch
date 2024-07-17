@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
-public class TurnManager : NetworkBehaviour,IEffectPlayer
+public class TurnManager : NetworkBehaviour, IEffectPlayer
 {
     public static Action<PlayerController> TurnChanged;
     public static event Action CardStateUpdate;
@@ -54,6 +54,7 @@ public class TurnManager : NetworkBehaviour,IEffectPlayer
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        gameSettings = Resources.LoadAll<GameSettings>("Game Settings")[0];
         if (_localPlayer.isThisTurn)
         {
             Debug.Log("This one is \"Host\"");
@@ -117,6 +118,7 @@ public class TurnManager : NetworkBehaviour,IEffectPlayer
         enemieToMove.rowNumber = yPos;
         var pos = grid.CellToWorld(new Vector3Int(xPos, 0, yPos)) - new Vector3Int(1, 0, 0);
         //Destroy enemy
+        RPC_EnemyDiedInvokeSound();
         Runner.Despawn(enemy.Object);
 
         StartCoroutine(MoveWithDelay(enemieToMove, new(xPos, 0, yPos), xPos));
@@ -222,6 +224,11 @@ public class TurnManager : NetworkBehaviour,IEffectPlayer
         PlayerDied?.Invoke(player);
         Runner.Despawn(Object);
     }
+    [Rpc]
+    private void RPC_EnemyDiedInvokeSound()
+    {
+        IEffectPlayer.OnPlaySFX?.Invoke(gameSettings.EnemyDiedSound);
+    }
     #endregion
 
     private void CardClicked()
@@ -236,7 +243,6 @@ public class TurnManager : NetworkBehaviour,IEffectPlayer
     }
     public void SetUp()
     {
-        gameSettings = Resources.LoadAll<GameSettings>("Game Settings")[0];
         SetUpPlayerCards();
         PlayersDeck = _localPlayer.SetUp(PlayersDeck, gameSettings.gameConfig.PlayerStartHandSize);
         PlayersDeck = _opponentPlayer.SetUp(PlayersDeck, gameSettings.gameConfig.PlayerStartHandSize);

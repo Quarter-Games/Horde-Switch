@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e3ce7f242bdc2143b656cf53e9a9001, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b5c3364e738e444dabaf3e20d3816c8, type: 3}
   m_Name: 13
   m_EditorClassIdentifier: 
+  OnBeingPlayed: {fileID: 0}
   cardSprite: {fileID: 21300000, guid: 1884bbef3557cc04b877aa4e7144cc8e, type: 3}
   data:
     ID: 13
     Value: 13
-    Name: Nuke
+    Name: Dwarfish Plane
     ownerType: 0
     cardType: 3

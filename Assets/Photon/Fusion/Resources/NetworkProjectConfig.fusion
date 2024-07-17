@@ -60,9 +60,7 @@
         "Fusion.Unity",
         "Assembly-CSharp",
         "Assembly-CSharp-firstpass",
-        "Fusion.Addons.Physics",
-        "Fusion.Addons.FSM",
-        "Core"
+        "QuarterGames.HordeSwitch.Core"
     ],
     "UseSerializableDictionary": true,
     "NullChecksForNetworkedProperties": true,

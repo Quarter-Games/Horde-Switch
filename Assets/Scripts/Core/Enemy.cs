@@ -20,9 +20,8 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
     public TMPro.TMP_Text enemyValue;
     public Material ReadyMaterial;
     public Material NotReadyMaterial;
-    public override void Spawned()
+    public void Start()
     {
-        base.Spawned();
         IEffectPlayer.OnPlaySFX?.Invoke(Card.cardValue.OnBeingPlayed);
     }
     private void Update()

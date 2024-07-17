@@ -15,11 +15,12 @@ public class SoundManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
         else
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -30,6 +31,7 @@ public class SoundManager : MonoBehaviour
     public void PlaySFX(AudioClip clip)
     {
         if (clip == null) return;
+        Debug.Log(clip.name + " is playing");
         foreach (var source in AudioSources)
         {
             if (source.isPlaying) continue;

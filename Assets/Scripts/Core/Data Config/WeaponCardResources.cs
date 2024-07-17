@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponCardResources : PlayerCardResources
+public class WeaponCardResources : CardResources
 {
-    [SerializeField] new protected PlayerCardData data;
+    [SerializeField] new protected CardData data;
 
     public override CardData cardData { get => data; }
 
-    public static WeaponCardResources Create(List<string> data)
+    new public static WeaponCardResources Create(List<string> data)
     {
         WeaponCardResources cardResources = CreateInstance<WeaponCardResources>();
-        cardResources.data = new PlayerCardData(data);
+        cardResources.data = new CardData(data);
         return cardResources;
     }
 }

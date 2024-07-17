@@ -33,8 +33,8 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
                 case CardType.Mine:
                     cardResources = MineCardResource.Create(data);
                     break;
-                default:
-                    cardResources = PlayerCardResources.Create(data);
+                case CardType.DwarfishPlane:
+                    cardResources = DwarfPlaneCardResource.Create(data);
                     break;
             }
 
@@ -84,29 +84,6 @@ public class CardData
         if (data.Count > 4 && Enum.TryParse(typeof(CardType), data[4], out var value)) cardType = (CardType)value;
         Debug.Log($"ID: {data[0]}; Type: {this.GetType()}");
 
-    }
-    public static CardData CardDataFactory(List<string> data)
-    {
-        if (data.Count <= 4) return new CardData(data);
-
-        if (Enum.TryParse(typeof(CardType), data[4], out var cardType))
-        {
-            switch (cardType)
-            {
-                case CardType.Creature:
-                    return new CreatureCardData(data);
-                case CardType.Portal:
-                    return new PortalCardData(data);
-                default:
-                    return new PlayerCardData(data);
-            }
-        }
-        else
-        {
-            Debug.LogError("CardType not found");
-            Debug.Log($"ID: {data[0]}; Data: {data[4]}");
-        }
-        return new CardData(data);
     }
     virtual public bool IsMonoSelectedCard()
     {
