@@ -10,16 +10,14 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
     public static event Action MinePlaced;
     public static Action<Enemy, PointerEventData> OnEnemyClick;
     public NetworkTransform networkTransform;
+    public bool HasVisiableMine;
     [Networked] public bool HasMine { get => default; set { } }
     [Networked] public int rowNumber { get => default; set { } }
     [Networked] public int columnNumber { get => default; set { } }
     [Networked] public Card Card { get => default; set { } }
 
     public GameObject enemyModel;
-    public GameObject enemyFloor;
     public TMPro.TMP_Text enemyValue;
-    public Material ReadyMaterial;
-    public Material NotReadyMaterial;
     public void Start()
     {
         IEffectPlayer.OnPlaySFX?.Invoke(Card.cardValue.OnBeingPlayed);
@@ -46,21 +44,10 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
     {
         OnEnemyClick?.Invoke(this, eventData);
     }
-    public void HighLight(bool value)
-    {
-        if (value)
-        {
-            enemyFloor.GetComponentsInChildren<MeshRenderer>()[0].material = ReadyMaterial;
-        }
-        else
-        {
-            enemyFloor.GetComponentsInChildren<MeshRenderer>()[0].material = NotReadyMaterial;
-
-        }
-    }
     public void PlaceMine()
     {
         RPC_SetMine();
+        HasVisiableMine = true;
         //TODO: Add visuals for the player, that put the mine
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
@@ -84,6 +71,6 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
     [Rpc]
     private void RPC_RemoveMineVisual()
     {
-
+        HasVisiableMine = false;
     }
 }

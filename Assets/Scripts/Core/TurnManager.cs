@@ -15,7 +15,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     public static event Action CardStateUpdate;
     public static event Action<PlayerController> PlayerDied;
     public static event Action<PlayerController> PlayerGotDamage;
-    [SerializeField] List<GameObject> GridTiles;
+    [SerializeField] List<FloorTile> GridTiles;
     public static TurnManager Instance { get; set; }
     public GameSettings gameSettings;
     [SerializeField] AnimationCurve MovementCurve;
@@ -68,14 +68,18 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         GameplayUIHandler.RequestTurnSwap += RPC_EndTurnRequest;
         HandCardVisual.selectedCard.Changed += CardClicked;
         HandCardVisual.CardDiscarded += RPC_CardDiscarded;
+        HandCardVisual.OnCardPlaySound += RPC_PlayCardSound;
 
     }
+
+
     private void OnDisable()
     {
         Enemy.OnEnemyClick -= EnemyClick;
         GameplayUIHandler.RequestTurnSwap -= RPC_EndTurnRequest;
         HandCardVisual.selectedCard.Changed -= CardClicked;
         HandCardVisual.CardDiscarded -= RPC_CardDiscarded;
+        HandCardVisual.OnCardPlaySound -= RPC_PlayCardSound;
     }
     #endregion
 
@@ -202,6 +206,11 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
 
     #region RPC Clients Methods
     [Rpc]
+    private void RPC_PlayCardSound(Card card)
+    {
+        IEffectPlayer.OnPlaySFX?.Invoke(card.cardValue.OnBeingPlayed);
+    }
+    [Rpc]
     private void RPC_CallDamageEvent(PlayerController player)
     {
         IEffectPlayer.OnPlaySFX?.Invoke(gameSettings.HPLostSound);
@@ -236,8 +245,9 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         var enemies = HandCardVisual.selectedCard.GetValidEnemies(enemyList.ToList(), _localPlayer.MainRow);
         foreach (var enemy in enemyList)
         {
-            enemy.enemyFloor = GridTiles[11 - ((enemy.rowNumber) * 4 + enemy.columnNumber + 1)];
-            enemy.HighLight(enemies.Contains(enemy));
+            FloorTile tile = GridTiles[11 - ((enemy.rowNumber) * 4 + enemy.columnNumber + 1)];
+            tile.SetEnemy(enemy);
+            tile.UpdateHighlightStatus(enemies.Contains(enemy) ? HighlightStatus.Clickable : HighlightStatus.None);
         }
 
     }
@@ -322,7 +332,8 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     public void SpawnEnemy(Vector3Int position)
     {
 
-        Vector3 WorldPos = (GridTiles[11 - ((position.z) * 4 + position.x + 1)].transform.position + GridTiles[11 - ((position.z) * 4 + position.x + 1)].transform.right);
+        FloorTile tile = GridTiles[11 - ((position.z) * 4 + position.x + 1)];
+        Vector3 WorldPos = tile.transform.position + tile.transform.right;
         //Vector3Int position = new Vector3Int((int)pos.x, (int)pos.y, (int)pos.z);
         //var WorldPos = grid.CellToWorld(position);
         WorldPos -= new Vector3(1f, 0, 0);
@@ -330,6 +341,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         enemy.transform.parent = transform;
         enemy.rowNumber = position.z;
         enemy.columnNumber = position.x;
+        tile.SetEnemy(enemy);
         if (enemyDeck.Count == 0)
         {
             //Reshuffling Enemy Deck

@@ -1,5 +1,6 @@
 using Assets.Scripts.SoundSystem;
 using Fusion;
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     public static event Action<Card> CardDiscarded;
     public static SelectedCards selectedCard = new();
     public static Action<HandCardVisual> OnCardClicked;
+    public static event Action<Card> OnCardPlaySound;
     public string Card_ID { get; private set; }
     public Card CardData;
     [SerializeField] Image cardImage;
@@ -53,10 +55,12 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
         selectedCard.DeselectCard(this);
         cardImage.color = Color.white;
     }
+    public void PlaySFX()
+    {
+        OnCardPlaySound.Invoke(CardData);
+    }
     public void Use()
     {
-
-        IEffectPlayer.OnPlaySFX?.Invoke(CardData.cardValue.OnBeingPlayed);
         DeselectCard();
         StartCoroutine(CardDisolving());
     }
@@ -115,6 +119,8 @@ public class SelectedCards : List<HandCardVisual>
     }
     public void UseCards()
     {
+        HandCardVisual highestValueCard = this.OrderByDescending(card => card.CardData.cardValue.cardData.Value).FirstOrDefault();
+        highestValueCard.PlaySFX();
         for (int i = Count - 1; i >= 0; i--)
         {
             Debug.Log(Count);
@@ -124,7 +130,9 @@ public class SelectedCards : List<HandCardVisual>
     public void UseRandomCard()
     {
         var list = this;
-        list[UnityEngine.Random.Range(0, list.Count)].Use();
+        var card = list[UnityEngine.Random.Range(0, list.Count)];
+        card.PlaySFX();
+        card.Use();
         Clear();
     }
 }

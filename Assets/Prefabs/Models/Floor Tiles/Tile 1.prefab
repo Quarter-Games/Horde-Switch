@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8200562645549217193}
+  - component: {fileID: 9007421316350888075}
+  - component: {fileID: 1235211806293364874}
   m_Layer: 0
   m_Name: Tile 1
   m_TagString: Untagged
@@ -32,6 +34,47 @@ Transform:
   - {fileID: 7282396525966934955}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9007421316350888075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6599291465118809323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94938197a0ce8364cbd2b72c74dafb6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RowNumber: 0
+  ColumnNumber: 0
+  HighlightStatus: 0
+  BasicMaterial: {fileID: 2100000, guid: dfce65349769cb3418b6e56b7ff4757e, type: 2}
+  ClickableMaterial: {fileID: 2100000, guid: bca22d46b17b41649b01571e4109d453, type: 2}
+  ChosenMaterial: {fileID: 2100000, guid: e8aef75cdefefcb40a6d0a65b9ce90d0, type: 2}
+  MinePlacedMaterial: {fileID: 2100000, guid: 22ab49e1898ce7346be0bc7a9850c01f, type: 2}
+  meshRenderer: {fileID: 8456469079603263684}
+--- !u!65 &1235211806293364874
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6599291465118809323}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.3207622, y: 1.1470816, z: 4.244003}
+  m_Center: {x: -0.044564962, y: 0.07354084, z: -0.0979445}
 --- !u!1001 &7105268933073118272
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -100,6 +143,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tile1LP
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 54e5df5e990db4c41b9b88da0163348f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -108,5 +155,10 @@ PrefabInstance:
 --- !u!4 &7282396525966934955 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 54e5df5e990db4c41b9b88da0163348f, type: 3}
+  m_PrefabInstance: {fileID: 7105268933073118272}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8456469079603263684 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: 54e5df5e990db4c41b9b88da0163348f, type: 3}
   m_PrefabInstance: {fileID: 7105268933073118272}
   m_PrefabAsset: {fileID: 0}
