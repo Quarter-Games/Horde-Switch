@@ -72,5 +72,11 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
     private void RPC_RemoveMineVisual()
     {
         HasVisiableMine = false;
+        //TODO: VFX of BOOM
+    }
+    public Vector3 GetEffectSpawnPosition()
+    {
+
+       return transform.position+transform.up*3;
     }
 }

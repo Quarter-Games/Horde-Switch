@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: 9
   m_EditorClassIdentifier: 
   OnBeingPlayed: {fileID: 0}
+  OnActivateEffect: {fileID: 8927483236365805678, guid: d358048e303c7384f803287a6fb38856, type: 3}
+  OnDeathEffect: {fileID: 0}
   cardSprite: {fileID: 21300000, guid: 8fabb449580eebf48b657acc3902e4a1, type: 3}
   data:
     ID: 9
     Value: 9
-    Name: 
+    Name: Spell Book
     ownerType: 0
     cardType: 1

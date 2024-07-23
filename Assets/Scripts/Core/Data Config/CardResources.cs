@@ -9,6 +9,8 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
 {
 
     public AudioClip OnBeingPlayed;
+    public ParticleSystem OnActivateEffect;
+    public ParticleSystem OnDeathEffect;
     abstract public CardData cardData { get; }
     [SerializeField] public Sprite cardSprite;
 
@@ -42,6 +44,9 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
             if (asset != null)
             {
                 cardResources.cardSprite = asset.cardSprite;
+                cardResources.OnBeingPlayed = asset.OnBeingPlayed;
+                cardResources.OnActivateEffect = asset.OnActivateEffect;
+                cardResources.OnDeathEffect = asset.OnDeathEffect;
             }
             UnityEditor.AssetDatabase.CreateAsset(cardResources, $"Assets/Resources/Cards/{cardResources.cardData.ID}.asset");
             return cardResources;
@@ -74,7 +79,7 @@ public class CardData
     public string Name;
     public OwnerType ownerType;
     public CardType cardType;
-
+    public static Action<Card,Vector3> CardIsPlayed;
     public CardData(List<string> data)
     {
         ID = int.Parse(data[0]);
@@ -98,16 +103,18 @@ public class CardData
     {
         manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
         Debug.Log($"Is enemy has mine on it: {enemy.HasMine}");
+        Card usedCard;
         if (!enemy.HasMine)
         {
-            HandCardVisual.selectedCard.UseCards();
+            usedCard = HandCardVisual.selectedCard.UseCards();
             manager.RPC_KillEnemy(enemy);
         }
         else
         {
-            HandCardVisual.selectedCard.UseRandomCard();
+            usedCard = HandCardVisual.selectedCard.UseRandomCard();
             enemy.RPC_RemoveMine();
         }
+        CardIsPlayed?.Invoke(usedCard, enemy.GetEffectSpawnPosition());
     }
     public enum OwnerType
     {

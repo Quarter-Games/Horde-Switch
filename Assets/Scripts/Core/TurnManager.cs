@@ -1,13 +1,11 @@
 using Assets.Scripts.SoundSystem;
 using Fusion;
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 
 public class TurnManager : NetworkBehaviour, IEffectPlayer
 {
@@ -69,6 +67,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         HandCardVisual.selectedCard.Changed += CardClicked;
         HandCardVisual.CardDiscarded += RPC_CardDiscarded;
         HandCardVisual.OnCardPlaySound += RPC_PlayCardSound;
+        CardData.CardIsPlayed += RPC_CardIsPlayedVFX;
 
     }
 
@@ -80,6 +79,8 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         HandCardVisual.selectedCard.Changed -= CardClicked;
         HandCardVisual.CardDiscarded -= RPC_CardDiscarded;
         HandCardVisual.OnCardPlaySound -= RPC_PlayCardSound;
+        CardData.CardIsPlayed -= RPC_CardIsPlayedVFX;
+
     }
     #endregion
 
@@ -159,6 +160,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     private void RPC_EndTurnRequest()
     {
+        HandCardVisual.selectedCard.Clear();
         if (_localPlayer.isThisTurn)
         {
             if (_localPlayer.isPlayedInThisTurn) DrawCardForPlayer(_localPlayer);
@@ -237,6 +239,11 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     private void RPC_EnemyDiedInvokeSound()
     {
         IEffectPlayer.OnPlaySFX?.Invoke(gameSettings.EnemyDiedSound);
+    }
+    [Rpc]
+    private void RPC_CardIsPlayedVFX(Card card, Vector3 pos)
+    {
+        VFXManager.PlayVFX(card.cardValue.OnActivateEffect.gameObject, pos, Quaternion.identity);
     }
     #endregion
 

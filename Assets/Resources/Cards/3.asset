@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: 3
   m_EditorClassIdentifier: 
   OnBeingPlayed: {fileID: 0}
+  OnActivateEffect: {fileID: 0}
+  OnDeathEffect: {fileID: 0}
   cardSprite: {fileID: 21300000, guid: be134c4db38eec948a7565d57c176f60, type: 3}
   data:
     ID: 3
     Value: 3
-    Name: 
+    Name: 'Sword '
     ownerType: 0
     cardType: 1

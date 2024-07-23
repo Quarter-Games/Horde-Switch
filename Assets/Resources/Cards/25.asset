@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: 25
   m_EditorClassIdentifier: 
   OnBeingPlayed: {fileID: 0}
+  OnActivateEffect: {fileID: 0}
+  OnDeathEffect: {fileID: 0}
   cardSprite: {fileID: 0}
   data:
     ID: 25

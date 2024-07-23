@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
     public void SetCameraPosition()
     {
         var ratio = 1/_camera.aspect;
-        transform.localPosition = new Vector3(0, 0, -ratio);
+        transform.localPosition = new Vector3(0, 0, -ratio*2f);
 
     }
 }

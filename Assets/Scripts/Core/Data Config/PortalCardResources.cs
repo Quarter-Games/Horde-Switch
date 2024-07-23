@@ -52,9 +52,10 @@ public class PortalCardData : CardData
             return;
         }
         manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
-        HandCardVisual.selectedCard.UseCards();
+        var card = HandCardVisual.selectedCard.UseCards();
         manager.RPC_SwapEnemies(enemy, ClickedFirst);
         ClickedFirst = null;
+        CardIsPlayed?.Invoke(card, enemy.GetEffectSpawnPosition());
     }
 
 }

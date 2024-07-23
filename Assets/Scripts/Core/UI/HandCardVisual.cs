@@ -117,7 +117,7 @@ public class SelectedCards : List<HandCardVisual>
             this[i].DeselectCard();
         }
     }
-    public void UseCards()
+    public Card UseCards()
     {
         HandCardVisual highestValueCard = this.OrderByDescending(card => card.CardData.cardValue.cardData.Value).FirstOrDefault();
         highestValueCard.PlaySFX();
@@ -126,13 +126,15 @@ public class SelectedCards : List<HandCardVisual>
             Debug.Log(Count);
             this[i].Use();
         }
+        return highestValueCard.CardData;
     }
-    public void UseRandomCard()
+    public Card UseRandomCard()
     {
         var list = this;
         var card = list[UnityEngine.Random.Range(0, list.Count)];
         card.PlaySFX();
         card.Use();
         Clear();
+        return card.CardData;
     }
 }
