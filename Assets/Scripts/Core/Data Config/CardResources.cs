@@ -11,8 +11,8 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
     public AudioClip OnBeingPlayed;
     public ParticleSystem OnActivateEffect;
     public ParticleSystem OnDeathEffect;
-    abstract public CardData cardData { get; }
-    [SerializeField] public Sprite cardSprite;
+    public Sprite cardSprite;
+    abstract public CardData DataOfCard { get; }
 
 
 #if UNITY_EDITOR
@@ -40,7 +40,7 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
                     break;
             }
 
-            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{cardResources.cardData.ID}.asset");
+            var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{cardResources.DataOfCard.ID}.asset");
             if (asset != null)
             {
                 cardResources.cardSprite = asset.cardSprite;
@@ -48,7 +48,7 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
                 cardResources.OnActivateEffect = asset.OnActivateEffect;
                 cardResources.OnDeathEffect = asset.OnDeathEffect;
             }
-            UnityEditor.AssetDatabase.CreateAsset(cardResources, $"Assets/Resources/Cards/{cardResources.cardData.ID}.asset");
+            UnityEditor.AssetDatabase.CreateAsset(cardResources, $"Assets/Resources/Cards/{cardResources.DataOfCard.ID}.asset");
             return cardResources;
 
         }
@@ -96,7 +96,7 @@ public class CardData
     }
     virtual public List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
     {
-        var temp = enemies.FindAll(x => x.Card.cardValue.cardData.Value <= Value && x.rowNumber == playerRow);
+        var temp = enemies.FindAll(x => x.Card.CardValue.DataOfCard.Value <= Value && x.RowNumber == playerRow);
         return temp;
     }
     virtual public void ApplyEffect(TurnManager manager, Enemy enemy)

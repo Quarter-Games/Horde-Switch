@@ -1,7 +1,5 @@
 using Fusion;
-using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,25 +8,34 @@ public struct Hand : INetworkStruct
 {
     [Networked, Capacity(60)]
     [SerializeField]
-    private NetworkLinkedList<Card> cards => default;
+    readonly private NetworkLinkedList<Card> ListOfCards => default;
     public Hand(IEnumerable<Card> _cards)
     {
         foreach (var card in _cards)
         {
-            cards.Add(card);
+            ListOfCards.Add(card);
         }
     }
-    public int Count => cards.Count;
-    public void AddCard(Card card)
+    readonly public int Count => ListOfCards.Count;
+    readonly public void AddCard(Card card)
     {
-        cards.Add(card);
+        var index = ListOfCards.IndexOf(default);
+        ListOfCards.Set(index, card);
     } 
-    public void RemoveCard(Card card)
+    readonly public void RemoveCard(Card card)
     {
-        cards.Remove(card);
+        var index = ListOfCards.IndexOf(card);
+        ListOfCards.Set(index, default);
     }
-    public Card this[int index]
+    readonly public Card this[int index]
     {
-        get { return cards[index]; }
+        get { return ListOfCards[index]; }
+    }
+    readonly public void CopyTo(ref List<Card> _cards)
+    {
+        foreach (var card in _cards)
+        {
+            ListOfCards.Add(card);
+        }
     }
 }

@@ -9,8 +9,8 @@ namespace Assets.Scripts.Core.Data_Config
 {
     internal class MineCardResource : CardResources
     {
-        [SerializeField] new protected MineCardData data;
-        public override CardData cardData { get => data; }
+        [SerializeField] protected MineCardData data;
+        public override CardData DataOfCard { get => data; }
         public static MineCardResource Create(List<string> data)
         {
             MineCardResource cardResources = CreateInstance<MineCardResource>();
@@ -39,7 +39,7 @@ public class MineCardData : CardData
     }
     public override List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
     {
-        var list = enemies.FindAll(x => x.rowNumber == 1);
+        var list = enemies.FindAll(x => x.RowNumber == 1);
 
         return list;
     }

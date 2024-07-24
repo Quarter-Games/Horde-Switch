@@ -12,7 +12,6 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] NetworkRunner networkRunner;
     [SerializeField] TMPro.TMP_InputField RoomNameInputField;
     [SerializeField] GameObject WaitingWindow;
-    [SerializeField] GameSettings _gameSettings;
     [SerializeField] TurnManager _turnManagerPrefab;
     [SerializeField] NetworkEvents Callbacks;
     [SerializeField] Button PlayButton;
@@ -24,7 +23,6 @@ public class MainMenuManager : MonoBehaviour
         Application.targetFrameRate = 60;
         Callbacks.OnShutdown.AddListener(OnShutdown);
         Callbacks.OnSessionListUpdate.AddListener(SessionsUpdate);
-        _gameSettings = Resources.LoadAll<GameSettings>("Game Settings")[0];
         networkRunner.JoinSessionLobby(SessionLobby.Shared).ContinueWith(AfterSessionJoining);
         PlayerController.PlayerCreated += PlayerCreated;
 
@@ -55,11 +53,6 @@ public class MainMenuManager : MonoBehaviour
             LoadScene();
         }
     }
-
-    private void Update()
-    {
-        //networkRunner.UpdateInternal(1);
-    }
     public void SessionsUpdate(NetworkRunner runner, List<SessionInfo> sessionList)
     {
         Debug.Log("SessionsUpdate");
@@ -75,7 +68,7 @@ public class MainMenuManager : MonoBehaviour
         {
             generateName = true;
         }
-        StartGameArgs args = new StartGameArgs()
+        StartGameArgs args = new()
         {
             PlayerCount = 2,
             GameMode = GameMode.AutoHostOrClient,
@@ -106,7 +99,7 @@ public class MainMenuManager : MonoBehaviour
             TurnManagerReference = networkRunner.Spawn(_turnManagerPrefab, inputAuthority: PlayerRef.None);
             DontDestroyOnLoad(TurnManagerReference);
             Debug.Log(TurnManagerReference.name + " is Created");
-            PlayerController.players[0].isThisTurn = true;
+            PlayerController.players[0].IsThisTurn = true;
             PlayerController.players[0].MainRow = 0;
             PlayerController.players[1].MainRow = 2;
             PlayerController.players[0].HP = 2;

@@ -17,14 +17,16 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     public static event Action<Card> OnCardPlaySound;
     public string Card_ID { get; private set; }
     public Card CardData;
-    [SerializeField] Image cardImage;
+    public Image cardImage;
     [SerializeField] Material DisolvingMaterialStart;
     [SerializeField] Material DisolvingMaterialFinished;
 
     public void SetUpVisual(Card card)
     {
-        Material material = new Material(DisolvingMaterialStart);
-        material.enableInstancing = true;
+        Material material = new(DisolvingMaterialStart)
+        {
+            enableInstancing = true
+        };
         cardImage.material = material;
         CardData = card;
         cardImage.enabled = card.ID != 0;
@@ -33,7 +35,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
             return;
         }
         Card_ID = card.ID.ToString();
-        cardImage.sprite = CardData.cardValue.cardSprite;
+        cardImage.sprite = CardData.CardValue.cardSprite;
 
     }
     public void OnPointerClick(PointerEventData eventData)
@@ -48,11 +50,15 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
             return;
         }
         selectedCard.SelectCard(this);
+        StartCoroutine(LerpInDirection(Vector2.up * 100));
         cardImage.color = Color.green;
     }
     public void DeselectCard()
     {
-        selectedCard.DeselectCard(this);
+        if (selectedCard.DeselectCard(this))
+        {
+            StartCoroutine(LerpInDirection(Vector2.down * 100));
+        }
         cardImage.color = Color.white;
     }
     public void PlaySFX()
@@ -73,6 +79,19 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
         }
         CardDiscarded?.Invoke(CardData);
     }
+    public IEnumerator LerpInDirection(Vector2 direction)
+    {
+        for (int i = 0; i < 60; i++)
+        {
+            cardImage.rectTransform.anchoredPosition += (direction / 60f);
+            yield return new WaitForSeconds(1 / 60f);
+        }
+    }
+    public bool IsActive => cardImage.enabled;
+    public void SetNewAnchoredPosition(Vector2 newPos)
+    {
+        StartCoroutine(LerpInDirection(newPos - cardImage.rectTransform.anchoredPosition));
+    }
 
 }
 public class SelectedCards : List<HandCardVisual>
@@ -80,14 +99,14 @@ public class SelectedCards : List<HandCardVisual>
     public event Action Changed;
     public void SelectCard(HandCardVisual card)
     {
-        if (this.Any(x => x.CardData.cardValue.cardData.IsMonoSelectedCard()))
+        if (this.Any(x => x.CardData.CardValue.DataOfCard.IsMonoSelectedCard()))
         {
             Clear();
             Add(card);
         }
         else
         {
-            if (card.CardData.cardValue.cardData.IsMonoSelectedCard())
+            if (card.CardData.CardValue.DataOfCard.IsMonoSelectedCard())
             {
                 Clear();
             }
@@ -95,20 +114,21 @@ public class SelectedCards : List<HandCardVisual>
         }
         Changed?.Invoke();
     }
-    public void DeselectCard(HandCardVisual card)
+    public bool DeselectCard(HandCardVisual card)
     {
-        Remove(card);
+        var changed = Remove(card);
         Changed?.Invoke();
+        return changed;
     }
     public int CardValues()
     {
-        return this.Sum(x => x.CardData.cardValue.cardData.Value);
+        return this.Sum(x => x.CardData.CardValue.DataOfCard.Value);
     }
     public List<Enemy> GetValidEnemies(List<Enemy> enemies, int playerRow)
     {
         if (Count == 0) return new();
-        if (Count == 1) return this[0].CardData.cardValue.cardData.GetPossibleEnemies(enemies, playerRow);
-        return enemies.FindAll(x => x.Card.cardValue.cardData.Value <= CardValues() && x.rowNumber == playerRow);
+        if (Count == 1) return this[0].CardData.CardValue.DataOfCard.GetPossibleEnemies(enemies, playerRow);
+        return enemies.FindAll(x => x.Card.CardValue.DataOfCard.Value <= CardValues() && x.RowNumber == playerRow);
     }
     new public void Clear()
     {
@@ -119,7 +139,7 @@ public class SelectedCards : List<HandCardVisual>
     }
     public Card UseCards()
     {
-        HandCardVisual highestValueCard = this.OrderByDescending(card => card.CardData.cardValue.cardData.Value).FirstOrDefault();
+        HandCardVisual highestValueCard = this.OrderByDescending(card => card.CardData.CardValue.DataOfCard.Value).FirstOrDefault();
         highestValueCard.PlaySFX();
         for (int i = Count - 1; i >= 0; i--)
         {

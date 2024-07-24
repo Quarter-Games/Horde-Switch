@@ -10,32 +10,32 @@ public class PlayerController : NetworkBehaviour
     [Networked] public int PlayerID { get => default; set { } }
     public bool isLocalPlayer;
     [Networked] public int MainRow { get => default; set { } }
-    [Networked] public bool isThisTurn { get => default; set { } }
-    [Networked] public Hand hand { get => default; set { } }
+    [Networked] public bool IsThisTurn { get => default; set { } }
+    [Networked] public Hand Hand { get => default; set { } }
     [Networked] public int HP { get => default; set { } }
-    [Networked] public bool isPlayedInThisTurn { get => default; set { } }
+    [Networked] public bool IsPlayedInThisTurn { get => default; set { } }
 
     public void ChangeTurn()
     {
-        isThisTurn = !isThisTurn;
+        IsThisTurn = !IsThisTurn;
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_RemoveCard(Card card)
     {
         Debug.Log($"Deleted Card: {card.ID}");
-        Debug.Log($"Hand Count: {hand.Count}");
+        Debug.Log($"Hand Count: {Hand.Count}");
 
-        var handCopy = hand;
+        var handCopy = Hand;
         handCopy.RemoveCard(card);
-        hand = handCopy;
-        Debug.Log($"Hand Count: {hand.Count}");
+        Hand = handCopy;
+        Debug.Log($"Hand Count: {Hand.Count}");
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_DrawCard(Deck cards)
     {
-        var handCopy = hand;
+        var handCopy = Hand;
         handCopy.AddCard(cards.Draw());
-        hand = handCopy;
+        Hand = handCopy;
 
     }
     private void Awake()
@@ -53,7 +53,7 @@ public class PlayerController : NetworkBehaviour
     }
     public Deck SetUp(Deck _deck, int HandSize)
     {
-        List<Card> cards = new List<Card>();
+        List<Card> cards = new();
         for (int i = 0; i < HandSize; i++)
         {
             //Declare player Hand
@@ -62,7 +62,7 @@ public class PlayerController : NetworkBehaviour
             _deck = deckCopy;
             cards.Add(card);
         }
-        hand = new Hand(cards);
+        Hand = new Hand(cards);
         return _deck;
 
     }

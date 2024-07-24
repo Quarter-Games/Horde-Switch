@@ -5,7 +5,7 @@ public class WeaponCardResources : CardResources
 {
     [SerializeField] new protected CardData data;
 
-    public override CardData cardData { get => data; }
+    public override CardData DataOfCard { get => data; }
 
     new public static WeaponCardResources Create(List<string> data)
     {

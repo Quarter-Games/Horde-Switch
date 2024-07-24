@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Collections;
+using System.Linq;
 
 public class GameplayUIHandler : MonoBehaviour
 {
@@ -34,7 +35,7 @@ public class GameplayUIHandler : MonoBehaviour
 
     private void Enemy_MinePlaced()
     {
-       StartCoroutine(ShowAndHideMessage("Mine placed"));
+        StartCoroutine(ShowAndHideMessage("Mine placed"));
     }
 
     private void OnPlayerDied(PlayerController controller)
@@ -78,7 +79,7 @@ public class GameplayUIHandler : MonoBehaviour
     private void OnTurnSwap(PlayerController controller)
     {
 
-        if (controller.isLocalPlayer && controller.isThisTurn)
+        if (controller.isLocalPlayer && controller.IsThisTurn)
         {
             Debug.Log("Your Turn");
             TurnText.text = "Your Turn";
@@ -112,7 +113,7 @@ public class GameplayUIHandler : MonoBehaviour
     }
     private void CardClicked(HandCardVisual visual)
     {
-        if (_playerController.isThisTurn)
+        if (_playerController.IsThisTurn)
         {
             visual.SelectCard();
         }
@@ -135,31 +136,47 @@ public class GameplayUIHandler : MonoBehaviour
         for (int i = 0; i < PlayerCards.Count; i++)
         {
             HandCardVisual cardVisual = PlayerCards[i];
-            if (_playerController.hand.Count <= i)
+            if (_playerController.Hand.Count <= i)
             {
                 cardVisual.SetUpVisual(new Card());
                 continue;
             }
-            var card = _playerController.hand[i];
+            var card = _playerController.Hand[i];
             cardVisual.SetUpVisual(card);
+        }
+        var LeftX = -25;
+        var RightX = 575;
+        int center = (LeftX+RightX)/2;
+        int step = 200;
+        int activeCards = PlayerCards.Count(x => x.IsActive);
+        int index = (activeCards-1)*-100;
+        for (int i = 0; i < PlayerCards.Count; i++)
+        {
+            HandCardVisual cardVisual = PlayerCards[i];
+            if (cardVisual.IsActive)
+            {
+                var offset = center +index;
+                var cardPos = cardVisual.transform.position;
+                cardVisual.SetNewAnchoredPosition(new Vector2(offset, -75));
+                index+=step;
+            }
         }
         if (_opponentController == null) return;
         for (int i = 0; i < EnemyCards.Count; i++)
         {
             GameObject cardVisual = EnemyCards[i];
-            if (_opponentController.hand.Count <= i)
+            if (_opponentController.Hand.Count <= i)
             {
                 cardVisual.SetActive(false);
                 continue;
             }
             cardVisual.SetActive(true);
         }
-
     }
 
     public void EndTurn()
     {
-        if (!_playerController.isThisTurn) return;
+        if (!_playerController.IsThisTurn) return;
         RequestTurnSwap?.Invoke();
     }
     private void OnDisable()

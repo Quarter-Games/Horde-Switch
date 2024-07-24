@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class TurnManager : NetworkBehaviour, IEffectPlayer
 {
@@ -21,14 +22,13 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [SerializeField] private PlayerController _opponentPlayer;
     [SerializeField] Grid grid;
     [SerializeField] Enemy enemyPrefab;
-    [Networked, Capacity(12)] public NetworkLinkedList<Enemy> enemyList => default;
+    [Networked, Capacity(12)] public NetworkLinkedList<Enemy> EnemyList => default;
     [SerializeField] Vector2 EnemyGridSize;
 
-    [Networked] public Deck enemyDeck { get => default; set { } }
+    [Networked] public Deck EnemyDeck { get => default; set { } }
     [Networked] public Deck PlayersDeck { get => default; set { } }
     [Networked] public Deck DiscardPile { get => default; set { } }
     [Networked] public Deck EnemyGraveyard { get => default; set { } }
-    Camera _camera;
     #region Unity Methods
     public void Start()
     {
@@ -53,7 +53,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         Instance = this;
         DontDestroyOnLoad(gameObject);
         gameSettings = Resources.LoadAll<GameSettings>("Game Settings")[0];
-        if (_localPlayer.isThisTurn)
+        if (_localPlayer.IsThisTurn)
         {
             Debug.Log("This one is \"Host\"");
             SetUp();
@@ -91,7 +91,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         var discard = DiscardPile;
         discard.AddCard(card);
         DiscardPile = discard;
-        if (_localPlayer.isThisTurn)
+        if (_localPlayer.IsThisTurn)
         {
             _localPlayer.RPC_RemoveCard(card);
         }
@@ -107,9 +107,9 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     public void RPC_KillEnemy(Enemy enemy)
     {
         //Remove enemy from list
-        var enemies = enemyList;
-        enemyList.Remove(enemy);
-        enemies = enemyList;
+        var enemies = EnemyList;
+        EnemyList.Remove(enemy);
+        enemies = EnemyList;
 
         //Add enemy to graveyard
         var discard = EnemyGraveyard;
@@ -117,10 +117,10 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         EnemyGraveyard = discard;
 
         //Move enemie down
-        int xPos = enemy.columnNumber;
-        int yPos = enemy.rowNumber;
-        var enemieToMove = enemyList.First(x => x.columnNumber == xPos && x.rowNumber == 1);
-        enemieToMove.rowNumber = yPos;
+        int xPos = enemy.ColumnNumber;
+        int yPos = enemy.RowNumber;
+        var enemieToMove = EnemyList.First(x => x.ColumnNumber == xPos && x.RowNumber == 1);
+        enemieToMove.RowNumber = yPos;
         var pos = grid.CellToWorld(new Vector3Int(xPos, 0, yPos)) - new Vector3Int(1, 0, 0);
         //Destroy enemy
         RPC_EnemyDiedInvokeSound();
@@ -134,36 +134,36 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_SwapEnemies(Enemy enemy, Enemy secondEnemy)
     {
-        var columnNum1 = secondEnemy.columnNumber;
-        var columnNum2 = enemy.columnNumber;
-        var pos1 = secondEnemy.rowNumber;
-        var pos2 = enemy.rowNumber;
+        var columnNum1 = secondEnemy.ColumnNumber;
+        var columnNum2 = enemy.ColumnNumber;
+        var pos1 = secondEnemy.RowNumber;
+        var pos2 = enemy.RowNumber;
         StartCoroutine(MoveWithDelay(enemy, new Vector3(columnNum1, 0, pos1), pos1, false));
-        enemy.rowNumber = pos1;
-        enemy.columnNumber = columnNum1;
+        enemy.RowNumber = pos1;
+        enemy.ColumnNumber = columnNum1;
         StartCoroutine(MoveWithDelay(secondEnemy, new Vector3(columnNum2, 0, pos2), pos2, false));
-        secondEnemy.rowNumber = pos2;
-        secondEnemy.columnNumber = columnNum2;
+        secondEnemy.RowNumber = pos2;
+        secondEnemy.ColumnNumber = columnNum2;
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_SetIfCardWasPlayed(int id)
     {
         if (_localPlayer.PlayerID == id)
         {
-            _localPlayer.isPlayedInThisTurn = true;
+            _localPlayer.IsPlayedInThisTurn = true;
         }
         else
         {
-            _opponentPlayer.isPlayedInThisTurn = true;
+            _opponentPlayer.IsPlayedInThisTurn = true;
         }
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     private void RPC_EndTurnRequest()
     {
         HandCardVisual.selectedCard.Clear();
-        if (_localPlayer.isThisTurn)
+        if (_localPlayer.IsThisTurn)
         {
-            if (_localPlayer.isPlayedInThisTurn) DrawCardForPlayer(_localPlayer);
+            if (_localPlayer.IsPlayedInThisTurn) DrawCardForPlayer(_localPlayer);
             else
             {
                 RemovePlayerHealth(_localPlayer);
@@ -172,7 +172,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         }
         else
         {
-            if (_opponentPlayer.isPlayedInThisTurn) DrawCardForPlayer(_opponentPlayer);
+            if (_opponentPlayer.IsPlayedInThisTurn) DrawCardForPlayer(_opponentPlayer);
             else
             {
                 RemovePlayerHealth(_opponentPlayer);
@@ -180,8 +180,8 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
             }
         }
         RPC_TurnSwap();
-        _localPlayer.isPlayedInThisTurn = false;
-        _opponentPlayer.isPlayedInThisTurn = false;
+        _localPlayer.IsPlayedInThisTurn = false;
+        _opponentPlayer.IsPlayedInThisTurn = false;
 
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
@@ -189,7 +189,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     {
         _localPlayer.ChangeTurn();
         _opponentPlayer.ChangeTurn();
-        if (_localPlayer.isThisTurn)
+        if (_localPlayer.IsThisTurn)
         {
             RPC_CallTurnChangeEvent(_localPlayer);
         }
@@ -210,7 +210,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [Rpc]
     private void RPC_PlayCardSound(Card card)
     {
-        IEffectPlayer.OnPlaySFX?.Invoke(card.cardValue.OnBeingPlayed);
+        IEffectPlayer.OnPlaySFX?.Invoke(card.CardValue.OnBeingPlayed);
     }
     [Rpc]
     private void RPC_CallDamageEvent(PlayerController player)
@@ -233,7 +233,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     private void RPC_InvokePlayerDieEvent(PlayerController player)
     {
         PlayerDied?.Invoke(player);
-        Runner.Despawn(Object);
+        Runner.Shutdown();
     }
     [Rpc]
     private void RPC_EnemyDiedInvokeSound()
@@ -243,16 +243,16 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [Rpc]
     private void RPC_CardIsPlayedVFX(Card card, Vector3 pos)
     {
-        VFXManager.PlayVFX(card.cardValue.OnActivateEffect.gameObject, pos, Quaternion.identity);
+        VFXManager.PlayVFX(card.CardValue.OnActivateEffect, pos, Quaternion.identity);
     }
     #endregion
 
     private void CardClicked()
     {
-        var enemies = HandCardVisual.selectedCard.GetValidEnemies(enemyList.ToList(), _localPlayer.MainRow);
-        foreach (var enemy in enemyList)
+        var enemies = HandCardVisual.selectedCard.GetValidEnemies(EnemyList.ToList(), _localPlayer.MainRow);
+        foreach (var enemy in EnemyList)
         {
-            FloorTile tile = GridTiles[11 - ((enemy.rowNumber) * 4 + enemy.columnNumber + 1)];
+            FloorTile tile = GridTiles[11 - ((enemy.RowNumber) * 4 + enemy.ColumnNumber + 1)];
             tile.SetEnemy(enemy);
             tile.UpdateHighlightStatus(enemies.Contains(enemy) ? HighlightStatus.Clickable : HighlightStatus.None);
         }
@@ -276,14 +276,14 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     }
     private void EnemyClick(Enemy enemy, PointerEventData data)
     {
-        if (!_localPlayer.isThisTurn)
+        if (!_localPlayer.IsThisTurn)
         {
             Debug.Log("Not Your Turn");
             return;
         }
-        if (HandCardVisual.selectedCard.GetValidEnemies(enemyList.ToList(), _localPlayer.MainRow).Contains(enemy))
+        if (HandCardVisual.selectedCard.GetValidEnemies(EnemyList.ToList(), _localPlayer.MainRow).Contains(enemy))
         {
-            HandCardVisual.selectedCard[0].CardData.cardValue.cardData.ApplyEffect(this, enemy);
+            HandCardVisual.selectedCard[0].CardData.CardValue.DataOfCard.ApplyEffect(this, enemy);
         }
         RPC_UpdateCardState();
         CardClicked();
@@ -304,22 +304,21 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     }
     public void SetUpEnemies()
     {
-        List<Card> cards = new List<Card>();
+        List<Card> cards = new();
         for (int i = 0; i < gameSettings.gameConfig.EnemyDeckSize; i++)
         {
             //Declare enemy Deck
             int k = gameSettings.gameConfig.EnemiesCardPull[i % gameSettings.gameConfig.EnemiesCardPull.Count];
             cards.Add(Card.Create(k));
         }
-        enemyDeck = new Deck(cards);
-        _camera = Camera.main;
+        EnemyDeck = new Deck(cards);
         grid.transform.position = new Vector3(0, 0.32f, -2);
         for (int i = 0; i < EnemyGridSize.x; i++)
         {
             for (int j = 0; j < EnemyGridSize.y; j++)
             {
 
-                Vector3Int position = new Vector3Int(i - 1, 0, j);
+                Vector3Int position = new(i - 1, 0, j);
                 SpawnEnemy(position);
             }
         }
@@ -346,20 +345,20 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         WorldPos -= new Vector3(1f, 0, 0);
         var enemy = Runner.Spawn(enemyPrefab, position: WorldPos, rotation: Quaternion.identity, PlayerRef.MasterClient);
         enemy.transform.parent = transform;
-        enemy.rowNumber = position.z;
-        enemy.columnNumber = position.x;
+        enemy.RowNumber = position.z;
+        enemy.ColumnNumber = position.x;
         tile.SetEnemy(enemy);
-        if (enemyDeck.Count == 0)
+        if (EnemyDeck.Count == 0)
         {
             //Reshuffling Enemy Deck
-            enemyDeck = new(EnemyGraveyard);
+            EnemyDeck = new(EnemyGraveyard);
             EnemyGraveyard = new Deck();
         }
-        var _deck = enemyDeck;
+        var _deck = EnemyDeck;
         var card = _deck.Draw();
-        enemyDeck = _deck;
+        EnemyDeck = _deck;
         enemy.Card = card;
-        enemyList.Add(enemy);
+        EnemyList.Add(enemy);
     }
     private void RemovePlayerHealth(PlayerController player)
     {
@@ -370,9 +369,9 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
             return;
         }
 
-        while (player.hand.Count > 0)
+        while (player.Hand.Count > 0)
         {
-            var card = player.hand[0];
+            var card = player.Hand[0];
             RPC_CardDiscarded(card);
         }
         for (int i = 0; i < 4; i++)
@@ -392,5 +391,39 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         var DeckCopy = PlayersDeck;
         DeckCopy.Draw();
         PlayersDeck = DeckCopy;
+    }
+    private void OnApplicationFocus(bool focus)
+    {
+        if (focus)
+        {
+            if (Runner.IsConnectedToServer) return;
+            SceneManager.LoadScene(0);
+            Destroy(Runner);
+            Destroy(gameObject);
+        }
+    }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+        if (_localPlayer != null)
+        {
+            Destroy(_localPlayer.gameObject);
+        }
+        if (_opponentPlayer != null)
+        {
+            Destroy(_opponentPlayer.gameObject);
+        }
+        try
+        {
+            Runner.Shutdown();
+        }
+        catch (Exception)
+        {
+            Debug.Log("Runner is already destroyed");
+        }
+
     }
 }

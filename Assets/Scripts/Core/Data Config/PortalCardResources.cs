@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PortalCardResources : CardResources
 {
-    [SerializeField] new protected PortalCardData data;
+    [SerializeField] protected PortalCardData data;
 
-    public override CardData cardData { get => data; }
+    public override CardData DataOfCard { get => data; }
 
     public static PortalCardResources Create(List<string> data)
     {
@@ -28,14 +28,14 @@ public class PortalCardData : CardData
     }
     public override List<Enemy> GetPossibleEnemies(List<Enemy> enemies, int playerRow)
     {
-        var temp = enemies.FindAll(x => x.rowNumber == 0 || x.rowNumber == 2);
+        var temp = enemies.FindAll(x => x.RowNumber == 0 || x.RowNumber == 2);
         if (ClickedFirst != null)
             temp = temp.FindAll(
-                x => x.rowNumber != ClickedFirst.rowNumber || x.columnNumber == ClickedFirst.columnNumber);
+                x => x.RowNumber != ClickedFirst.RowNumber || x.ColumnNumber == ClickedFirst.ColumnNumber);
         Debug.Log("Portal");
         foreach (var item in temp)
         {
-            Debug.Log($"Value: {item.Card.cardValue.cardData.Value}; Pos Y and X: {item.columnNumber}, {item.rowNumber}");
+            Debug.Log($"Value: {item.Card.CardValue.DataOfCard.Value}; Pos Y and X: {item.ColumnNumber}, {item.RowNumber}");
         }
         return temp;
     }

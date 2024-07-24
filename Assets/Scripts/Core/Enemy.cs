@@ -12,15 +12,15 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
     public NetworkTransform networkTransform;
     public bool HasVisiableMine;
     [Networked] public bool HasMine { get => default; set { } }
-    [Networked] public int rowNumber { get => default; set { } }
-    [Networked] public int columnNumber { get => default; set { } }
+    [Networked] public int RowNumber { get => default; set { } }
+    [Networked] public int ColumnNumber { get => default; set { } }
     [Networked] public Card Card { get => default; set { } }
 
     public GameObject enemyModel;
     public TMPro.TMP_Text enemyValue;
     public void Start()
     {
-        IEffectPlayer.OnPlaySFX?.Invoke(Card.cardValue.OnBeingPlayed);
+        IEffectPlayer.OnPlaySFX?.Invoke(Card.CardValue.OnBeingPlayed);
     }
     private void Update()
     {
@@ -38,7 +38,7 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
             enemyModel.transform.rotation = Quaternion.Euler(new(0, 180, 0));
         }
         enemyModel.transform.rotation *= Quaternion.Euler(new(-22.5f, 0, 0));
-        enemyValue.text = Card.cardValue.cardData.Value.ToString();
+        enemyValue.text = Card.CardValue.DataOfCard.Value.ToString();
     }
     public void OnPointerClick(PointerEventData eventData)
     {

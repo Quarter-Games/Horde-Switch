@@ -18,7 +18,7 @@ public class FloorTile : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        enemy?.OnPointerClick(eventData);
+        enemy.OnPointerClick(eventData);
     }
     public void UpdateHighlightStatus(HighlightStatus status)
     {

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class DwarfPlaneCardResource : CardResources
 {
-    [SerializeField] new protected DwarfPlaneCardData data;
+    [SerializeField] protected DwarfPlaneCardData data;
 
-    public override CardData cardData { get => data; }
+    public override CardData DataOfCard { get => data; }
 
     public static DwarfPlaneCardResource Create(List<string> data)
     {
