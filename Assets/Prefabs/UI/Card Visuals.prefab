@@ -93,3 +93,27 @@ MonoBehaviour:
   cardImage: {fileID: 3878364874562995885}
   DisolvingMaterialStart: {fileID: 2100000, guid: 2d07d8acba2a11247843d38617cf4bc1, type: 2}
   DisolvingMaterialFinished: {fileID: 2100000, guid: c3fd87cae94794f408a9537aab5b9cc2, type: 2}
+  cardMovementCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: -0.0065350356
+      outSlope: -0.0065350356
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0
+      outWeight: 0.7019328
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: -0
+      outSlope: -0
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.70600206
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

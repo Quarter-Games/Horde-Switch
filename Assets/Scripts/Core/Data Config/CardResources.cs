@@ -106,12 +106,12 @@ public class CardData
         Card usedCard;
         if (!enemy.HasMine)
         {
-            usedCard = HandCardVisual.selectedCard.UseCards();
+            usedCard = HandCardVisual.selectedCards.UseCards();
             manager.RPC_KillEnemy(enemy);
         }
         else
         {
-            usedCard = HandCardVisual.selectedCard.UseRandomCard();
+            usedCard = HandCardVisual.selectedCards.UseRandomCard();
             enemy.RPC_RemoveMine();
         }
         CardIsPlayed?.Invoke(usedCard, enemy.GetEffectSpawnPosition());

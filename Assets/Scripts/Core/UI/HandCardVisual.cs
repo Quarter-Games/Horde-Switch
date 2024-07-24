@@ -9,17 +9,20 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
+public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     public static event Action<Card> CardDiscarded;
-    public static SelectedCards selectedCard = new();
+    public static SelectedCards selectedCards = new();
     public static Action<HandCardVisual> OnCardClicked;
     public static event Action<Card> OnCardPlaySound;
+    [SerializeField] private bool isDragging;
     public string Card_ID { get; private set; }
     public Card CardData;
     public Image cardImage;
+    public bool isComingToHand;
     [SerializeField] Material DisolvingMaterialStart;
     [SerializeField] Material DisolvingMaterialFinished;
+    [SerializeField] AnimationCurve cardMovementCurve;
 
     public void SetUpVisual(Card card)
     {
@@ -40,22 +43,24 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     }
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (isDragging) return;
+        if (isComingToHand) return;
         OnCardClicked?.Invoke(this);
     }
     public void SelectCard()
     {
-        if (selectedCard.Contains(this))
+        if (selectedCards.Contains(this))
         {
             DeselectCard();
             return;
         }
-        selectedCard.SelectCard(this);
+        selectedCards.SelectCard(this);
         StartCoroutine(LerpInDirection(Vector2.up * 100));
         cardImage.color = Color.green;
     }
     public void DeselectCard()
     {
-        if (selectedCard.DeselectCard(this))
+        if (selectedCards.DeselectCard(this))
         {
             StartCoroutine(LerpInDirection(Vector2.down * 100));
         }
@@ -81,11 +86,15 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     }
     public IEnumerator LerpInDirection(Vector2 direction)
     {
-        for (int i = 0; i < 60; i++)
+        var timer = cardMovementCurve.keys[1].time;
+        Vector2 startPos = cardImage.rectTransform.anchoredPosition;
+        for (int i = 0; i <= 30; i++)
         {
-            cardImage.rectTransform.anchoredPosition += (direction / 60f);
-            yield return new WaitForSeconds(1 / 60f);
+            if (isDragging) break;
+            cardImage.rectTransform.anchoredPosition = startPos + direction * cardMovementCurve.Evaluate(i / 30f);
+            yield return new WaitForSeconds(timer / 30f);
         }
+        isComingToHand = false;
     }
     public bool IsActive => cardImage.enabled;
     public void SetNewAnchoredPosition(Vector2 newPos)
@@ -93,6 +102,60 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
         StartCoroutine(LerpInDirection(newPos - cardImage.rectTransform.anchoredPosition));
     }
 
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (isDragging) return;
+        if (!selectedCards.Contains(this)) OnCardClicked?.Invoke(this);
+        foreach (HandCardVisual card in selectedCards)
+        {
+            card.isDragging = true;
+            cardImage.color = new Color(0,1,0,0.5f);
+        }
+    }
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (!isDragging) return;
+        var pos = eventData.delta;
+        foreach (var card in selectedCards)
+        {
+            card.transform.position += new Vector3(pos.x, pos.y, 0);
+        }
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100, LayerMask.GetMask("Default")))
+        {
+            Debug.Log("Dragging");
+            if (hit.collider.TryGetComponent(out Enemy enemy))
+            {
+                
+                Debug.Log("Enemy");
+            }
+            else if (hit.collider.TryGetComponent(out FloorTile tile))
+            {
+                Debug.Log("Tile");
+            }
+            else
+            {
+                Debug.Log("Nothing");
+            }
+        }
+        else
+        {
+            Debug.Log("Nothing");
+        }
+    }
+
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (!isDragging) return;
+        for (int i = selectedCards.Count - 1; i >= 0; i--)
+        {
+            HandCardVisual card = selectedCards[i];
+            card.isDragging = false;
+            OnCardClicked?.Invoke(card);
+        }
+        TurnManager.Instance.RPC_UpdateCardState();
+
+    }
 }
 public class SelectedCards : List<HandCardVisual>
 {

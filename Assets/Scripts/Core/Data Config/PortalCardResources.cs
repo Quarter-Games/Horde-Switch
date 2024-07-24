@@ -52,7 +52,7 @@ public class PortalCardData : CardData
             return;
         }
         manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
-        var card = HandCardVisual.selectedCard.UseCards();
+        var card = HandCardVisual.selectedCards.UseCards();
         manager.RPC_SwapEnemies(enemy, ClickedFirst);
         ClickedFirst = null;
         CardIsPlayed?.Invoke(card, enemy.GetEffectSpawnPosition());

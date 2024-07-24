@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class FloorTile : MonoBehaviour, IPointerClickHandler
+public class FloorTile : MonoBehaviour, IPointerClickHandler,IPointerEnterHandler, IPointerExitHandler
 {
     public static event Action<FloorTile> OnFloorTileClick;
     public int RowNumber;
@@ -25,17 +25,28 @@ public class FloorTile : MonoBehaviour, IPointerClickHandler
         switch (status)
         {
             case HighlightStatus.None:
-                if (enemy.HasVisiableMine) meshRenderer.material = MinePlacedMaterial;
-                else meshRenderer.material = BasicMaterial;
+                if (enemy.HasVisiableMine)
+                {
+                    meshRenderer.material = MinePlacedMaterial;
+                    HighlightStatus = HighlightStatus.MinePlaced;
+                }
+                else
+                {
+                    meshRenderer.material = BasicMaterial;
+                    HighlightStatus = HighlightStatus.None;
+                }
                 break;
             case HighlightStatus.Clickable:
                 meshRenderer.material = ClickableMaterial;
+                HighlightStatus = HighlightStatus.Clickable;
                 break;
             case HighlightStatus.Selected:
                 meshRenderer.material = ChosenMaterial;
+                HighlightStatus = HighlightStatus.Selected;
                 break;
             case HighlightStatus.MinePlaced:
                 meshRenderer.material = MinePlacedMaterial;
+                HighlightStatus = HighlightStatus.MinePlaced;
                 break;
         }
     }
@@ -44,6 +55,24 @@ public class FloorTile : MonoBehaviour, IPointerClickHandler
         this.enemy = enemy;
         if (enemy.HasVisiableMine) UpdateHighlightStatus(HighlightStatus.MinePlaced);
         else UpdateHighlightStatus(HighlightStatus.None);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (HandCardVisual.selectedCards.Count == 0) return;
+        if (HighlightStatus == HighlightStatus.Clickable)
+        {
+            UpdateHighlightStatus(HighlightStatus.Selected);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (HandCardVisual.selectedCards.Count == 0) return;
+        if (HighlightStatus == HighlightStatus.Selected)
+        {
+            UpdateHighlightStatus(HighlightStatus.Clickable);
+        }
     }
 }
 public enum HighlightStatus

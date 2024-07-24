@@ -64,7 +64,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     {
         Enemy.OnEnemyClick += EnemyClick;
         GameplayUIHandler.RequestTurnSwap += RPC_EndTurnRequest;
-        HandCardVisual.selectedCard.Changed += CardClicked;
+        HandCardVisual.selectedCards.Changed += CardClicked;
         HandCardVisual.CardDiscarded += RPC_CardDiscarded;
         HandCardVisual.OnCardPlaySound += RPC_PlayCardSound;
         CardData.CardIsPlayed += RPC_CardIsPlayedVFX;
@@ -76,7 +76,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     {
         Enemy.OnEnemyClick -= EnemyClick;
         GameplayUIHandler.RequestTurnSwap -= RPC_EndTurnRequest;
-        HandCardVisual.selectedCard.Changed -= CardClicked;
+        HandCardVisual.selectedCards.Changed -= CardClicked;
         HandCardVisual.CardDiscarded -= RPC_CardDiscarded;
         HandCardVisual.OnCardPlaySound -= RPC_PlayCardSound;
         CardData.CardIsPlayed -= RPC_CardIsPlayedVFX;
@@ -160,7 +160,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     private void RPC_EndTurnRequest()
     {
-        HandCardVisual.selectedCard.Clear();
+        HandCardVisual.selectedCards.Clear();
         if (_localPlayer.IsThisTurn)
         {
             if (_localPlayer.IsPlayedInThisTurn) DrawCardForPlayer(_localPlayer);
@@ -249,7 +249,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
 
     private void CardClicked()
     {
-        var enemies = HandCardVisual.selectedCard.GetValidEnemies(EnemyList.ToList(), _localPlayer.MainRow);
+        var enemies = HandCardVisual.selectedCards.GetValidEnemies(EnemyList.ToList(), _localPlayer.MainRow);
         foreach (var enemy in EnemyList)
         {
             FloorTile tile = GridTiles[11 - ((enemy.RowNumber) * 4 + enemy.ColumnNumber + 1)];
@@ -281,9 +281,9 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
             Debug.Log("Not Your Turn");
             return;
         }
-        if (HandCardVisual.selectedCard.GetValidEnemies(EnemyList.ToList(), _localPlayer.MainRow).Contains(enemy))
+        if (HandCardVisual.selectedCards.GetValidEnemies(EnemyList.ToList(), _localPlayer.MainRow).Contains(enemy))
         {
-            HandCardVisual.selectedCard[0].CardData.CardValue.DataOfCard.ApplyEffect(this, enemy);
+            HandCardVisual.selectedCards[0].CardData.CardValue.DataOfCard.ApplyEffect(this, enemy);
         }
         RPC_UpdateCardState();
         CardClicked();

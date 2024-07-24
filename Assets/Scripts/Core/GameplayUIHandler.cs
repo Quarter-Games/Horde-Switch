@@ -157,6 +157,7 @@ public class GameplayUIHandler : MonoBehaviour
             {
                 var offset = center +index;
                 var cardPos = cardVisual.transform.position;
+                cardVisual.isComingToHand = true;
                 cardVisual.SetNewAnchoredPosition(new Vector2(offset, -75));
                 index+=step;
             }
