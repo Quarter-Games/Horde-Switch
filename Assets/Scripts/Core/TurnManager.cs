@@ -14,11 +14,11 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     public static event Action CardStateUpdate;
     public static event Action<PlayerController> PlayerDied;
     public static event Action<PlayerController> PlayerGotDamage;
-    [SerializeField] List<FloorTile> GridTiles;
+    public List<FloorTile> GridTiles;
     public static TurnManager Instance { get; set; }
     public GameSettings gameSettings;
     [SerializeField] AnimationCurve MovementCurve;
-    [SerializeField] private PlayerController _localPlayer;
+    public PlayerController _localPlayer;
     [SerializeField] private PlayerController _opponentPlayer;
     [SerializeField] Grid grid;
     [SerializeField] Enemy enemyPrefab;

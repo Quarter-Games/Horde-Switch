@@ -23,6 +23,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     [SerializeField] Material DisolvingMaterialStart;
     [SerializeField] Material DisolvingMaterialFinished;
     [SerializeField] AnimationCurve cardMovementCurve;
+    public static FloorTile lastHoverTile;
 
     public void SetUpVisual(Card card)
     {
@@ -72,6 +73,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     }
     public void Use()
     {
+        isDragging = false;
         DeselectCard();
         StartCoroutine(CardDisolving());
     }
@@ -84,15 +86,15 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
         }
         CardDiscarded?.Invoke(CardData);
     }
-    public IEnumerator LerpInDirection(Vector2 direction)
+    public IEnumerator LerpInDirection(Vector2 direction, float time = 30f)
     {
         var timer = cardMovementCurve.keys[1].time;
         Vector2 startPos = cardImage.rectTransform.anchoredPosition;
-        for (int i = 0; i <= 30; i++)
+        for (int i = 0; i <= time; i++)
         {
             if (isDragging) break;
-            cardImage.rectTransform.anchoredPosition = startPos + direction * cardMovementCurve.Evaluate(i / 30f);
-            yield return new WaitForSeconds(timer / 30f);
+            cardImage.rectTransform.anchoredPosition = startPos + direction * cardMovementCurve.Evaluate(i / time);
+            yield return new WaitForSeconds(timer / time);
         }
         isComingToHand = false;
     }
@@ -106,55 +108,88 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     {
         if (isDragging) return;
         if (!selectedCards.Contains(this)) OnCardClicked?.Invoke(this);
-        foreach (HandCardVisual card in selectedCards)
+        for (int i = 0; i < selectedCards.Count; i++)
         {
+            HandCardVisual card = selectedCards[i];
             card.isDragging = true;
-            cardImage.color = new Color(0,1,0,0.5f);
+            cardImage.color = new Color(0, 1, 0, 0.5f);
         }
     }
     public void OnDrag(PointerEventData eventData)
     {
         if (!isDragging) return;
-        var pos = eventData.delta;
-        foreach (var card in selectedCards)
+        var pos = eventData.position;
+        float center = pos.x - 100;
+        int step = 200;
+        int activeCards = selectedCards.Count;
+        int index = (activeCards - 1) * -100;
+        for (int i = 0; i < selectedCards.Count; i++)
         {
-            card.transform.position += new Vector3(pos.x, pos.y, 0);
+            HandCardVisual cardVisual = selectedCards[i];
+            if (cardVisual.IsActive)
+            {
+                var offset = center + index;
+                StartCoroutine(LerpInDirection(new Vector2(offset, pos.y),3f));
+                index += step;
+            }
         }
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100, LayerMask.GetMask("Default")))
         {
             Debug.Log("Dragging");
             if (hit.collider.TryGetComponent(out Enemy enemy))
             {
-                
+                ClearLastHoveredTile();
+                if (!selectedCards.GetValidEnemies(TurnManager.Instance.EnemyList.ToList(), TurnManager.Instance._localPlayer.MainRow).Contains(enemy))
+                    return;
+                lastHoverTile = TurnManager.Instance.GridTiles.Find(x => x.Enemy == enemy);
+                lastHoverTile.UpdateHighlightStatus(HighlightStatus.Selected);
                 Debug.Log("Enemy");
             }
             else if (hit.collider.TryGetComponent(out FloorTile tile))
             {
+                ClearLastHoveredTile();
+                if (!selectedCards.GetValidEnemies(TurnManager.Instance.EnemyList.ToList(), TurnManager.Instance._localPlayer.MainRow).Contains(tile.Enemy))
+                    return;
+                lastHoverTile = tile;
+                tile.UpdateHighlightStatus(HighlightStatus.Selected);
                 Debug.Log("Tile");
             }
             else
             {
+                ClearLastHoveredTile();
                 Debug.Log("Nothing");
             }
         }
         else
         {
+            ClearLastHoveredTile();
             Debug.Log("Nothing");
         }
     }
 
-
+    private void ClearLastHoveredTile()
+    {
+        if (lastHoverTile == null) return;
+        lastHoverTile.UpdateHighlightStatus(HighlightStatus.Clickable);
+        lastHoverTile = null;
+    }
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!isDragging) return;
-        for (int i = selectedCards.Count - 1; i >= 0; i--)
+        if (lastHoverTile != null)
         {
-            HandCardVisual card = selectedCards[i];
-            card.isDragging = false;
-            OnCardClicked?.Invoke(card);
+            lastHoverTile.OnPointerClick(eventData);
         }
-        TurnManager.Instance.RPC_UpdateCardState();
-
+        else
+        {
+            for (int i = selectedCards.Count - 1; i >= 0; i--)
+            {
+                HandCardVisual card = selectedCards[i];
+                card.isDragging = false;
+                OnCardClicked?.Invoke(card);
+            }
+            TurnManager.Instance.RPC_UpdateCardState();
+        }
     }
 }
 public class SelectedCards : List<HandCardVisual>
@@ -206,7 +241,6 @@ public class SelectedCards : List<HandCardVisual>
         highestValueCard.PlaySFX();
         for (int i = Count - 1; i >= 0; i--)
         {
-            Debug.Log(Count);
             this[i].Use();
         }
         return highestValueCard.CardData;

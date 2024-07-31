@@ -15,7 +15,7 @@ public class FloorTile : MonoBehaviour, IPointerClickHandler,IPointerEnterHandle
     [SerializeField] private MeshRenderer meshRenderer;
     private Enemy enemy;
 
-
+    public Enemy Enemy => enemy;
     public void OnPointerClick(PointerEventData eventData)
     {
         enemy.OnPointerClick(eventData);
