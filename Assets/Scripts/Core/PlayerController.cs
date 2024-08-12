@@ -22,13 +22,9 @@ public class PlayerController : NetworkBehaviour
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_RemoveCard(Card card)
     {
-        Debug.Log($"Deleted Card: {card.ID}");
-        Debug.Log($"Hand Count: {Hand.Count}");
-
         var handCopy = Hand;
         handCopy.RemoveCard(card);
         Hand = handCopy;
-        Debug.Log($"Hand Count: {Hand.Count}");
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_DrawCard(Deck cards)

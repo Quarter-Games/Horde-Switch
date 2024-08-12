@@ -31,6 +31,7 @@ public class GameplayUIHandler : MonoBehaviour
         TurnManager.PlayerGotDamage += UpdateHealth;
         TurnManager.PlayerDied += OnPlayerDied;
         Enemy.MinePlaced += Enemy_MinePlaced;
+        HandCardVisual.selectedCards.Changed += UpdateCardVisuals;
     }
 
     private void Enemy_MinePlaced()
@@ -146,27 +147,28 @@ public class GameplayUIHandler : MonoBehaviour
         }
         var LeftX = -25;
         var RightX = 575;
-        int center = (LeftX+RightX)/2;
+        int center = (LeftX + RightX) / 2;
         int step = 200;
         int activeCards = PlayerCards.Count(x => x.IsActive);
-        int index = (activeCards-1)*-100;
+        int index = (activeCards - 1) * -100;
         for (int i = 0; i < PlayerCards.Count; i++)
         {
             HandCardVisual cardVisual = PlayerCards[i];
             if (cardVisual.IsActive)
             {
-                var offset = center +index;
+                var offset = center + index;
                 var cardPos = cardVisual.transform.position;
                 cardVisual.isComingToHand = true;
-                cardVisual.SetNewAnchoredPosition(new Vector2(offset, -75));
-                index+=step;
+                bool selected = HandCardVisual.selectedCards.Contains(cardVisual);
+                cardVisual.SetNewAnchoredPosition(new Vector2(offset, -75 + (selected ? 100 : 0)));
+                index += step;
             }
         }
         if (_opponentController == null) return;
-        for (int i = 0; i < EnemyCards.Count; i++)
+        for (int i = 0; i < _opponentController.Hand.Count; i++)
         {
             GameObject cardVisual = EnemyCards[i];
-            if (_opponentController.Hand.Count <= i)
+            if (_opponentController.Hand[i].ID <= 0)
             {
                 cardVisual.SetActive(false);
                 continue;
@@ -188,6 +190,7 @@ public class GameplayUIHandler : MonoBehaviour
         TurnManager.PlayerGotDamage -= UpdateHealth;
         TurnManager.PlayerDied -= OnPlayerDied;
         Enemy.MinePlaced -= Enemy_MinePlaced;
+        HandCardVisual.selectedCards.Changed -= UpdateCardVisuals;
     }
 }
 [Serializable]

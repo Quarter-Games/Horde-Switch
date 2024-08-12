@@ -116,6 +116,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         discard.AddCard(enemy.Card);
         EnemyGraveyard = discard;
 
+
         //Move enemie down
         int xPos = enemy.ColumnNumber;
         int yPos = enemy.RowNumber;
@@ -125,7 +126,6 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         //Destroy enemy
         RPC_EnemyDiedInvokeSound();
         Runner.Despawn(enemy.Object);
-
         StartCoroutine(MoveWithDelay(enemieToMove, new(xPos, 0, yPos), xPos));
         Debug.Log(pos, enemieToMove);
 
@@ -180,10 +180,13 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
             }
         }
         RPC_TurnSwap();
+        RPC_ClearSelectedCards();
+        RPC_UpdateCardState();
         _localPlayer.IsPlayedInThisTurn = false;
         _opponentPlayer.IsPlayedInThisTurn = false;
 
     }
+    
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_TurnSwap()
     {
@@ -213,6 +216,11 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         IEffectPlayer.OnPlaySFX?.Invoke(card.CardValue.OnBeingPlayed);
     }
     [Rpc]
+    public void RPC_SetEnemy(int tileIndex, Enemy enemy)
+    {
+        GridTiles[tileIndex].SetEnemy(enemy);
+    }
+    [Rpc]
     private void RPC_CallDamageEvent(PlayerController player)
     {
         IEffectPlayer.OnPlaySFX?.Invoke(gameSettings.HPLostSound);
@@ -227,7 +235,12 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [Rpc]
     public void RPC_UpdateCardState()
     {
+        HandCardVisual.selectedCards.TriggerChanged();
         CardStateUpdate?.Invoke();
+        foreach (var tile in GridTiles)
+        {
+            tile.UpdateHighlightStatus(tile.HighlightStatus);
+        }
     }
     [Rpc]
     private void RPC_InvokePlayerDieEvent(PlayerController player)
@@ -244,6 +257,11 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     private void RPC_CardIsPlayedVFX(Card card, Vector3 pos)
     {
         VFXManager.PlayVFX(card.CardValue.OnActivateEffect, pos, Quaternion.identity);
+    }
+    [Rpc]
+    public void RPC_ClearSelectedCards()
+    {
+        HandCardVisual.selectedCards.Clear();
     }
     #endregion
 
@@ -347,7 +365,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         enemy.transform.parent = transform;
         enemy.RowNumber = position.z;
         enemy.ColumnNumber = position.x;
-        tile.SetEnemy(enemy);
+        RPC_SetEnemy(11 - ((position.z) * 4 + position.x + 1), enemy);
         if (EnemyDeck.Count == 0)
         {
             //Reshuffling Enemy Deck
@@ -369,9 +387,9 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
             return;
         }
 
-        while (player.Hand.Count > 0)
+        for (int i = 0; i < player.Hand.Count; i++)
         {
-            var card = player.Hand[0];
+            var card = player.Hand[i];
             RPC_CardDiscarded(card);
         }
         for (int i = 0; i < 4; i++)

@@ -24,14 +24,12 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     [SerializeField] Material DisolvingMaterialFinished;
     [SerializeField] AnimationCurve cardMovementCurve;
     public static FloorTile lastHoverTile;
+    private bool isDisolving;
 
     public void SetUpVisual(Card card)
     {
-        Material material = new(DisolvingMaterialStart)
-        {
-            enableInstancing = true
-        };
-        cardImage.material = material;
+        bool wasActive = cardImage.enabled;
+        if (CardData.ID != card.ID) StartCoroutine(CardResolving());
         CardData = card;
         cardImage.enabled = card.ID != 0;
         if (card.ID == 0)
@@ -45,7 +43,6 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     public void OnPointerClick(PointerEventData eventData)
     {
         if (isDragging) return;
-        if (isComingToHand) return;
         OnCardClicked?.Invoke(this);
     }
     public void SelectCard()
@@ -56,14 +53,17 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
             return;
         }
         selectedCards.SelectCard(this);
-        StartCoroutine(LerpInDirection(Vector2.up * 100));
         cardImage.color = Color.green;
     }
     public void DeselectCard()
     {
         if (selectedCards.DeselectCard(this))
         {
-            StartCoroutine(LerpInDirection(Vector2.down * 100));
+            if (CardData.CardValue is PortalCardResources pC)
+            {
+                StartCoroutine(CardResolving());
+                PortalCardData.ClickedFirst = null;
+            }
         }
         cardImage.color = Color.white;
     }
@@ -71,22 +71,42 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     {
         OnCardPlaySound.Invoke(CardData);
     }
-    public void Use()
+    public void Use(bool isDiscarded = true)
     {
         isDragging = false;
-        DeselectCard();
-        StartCoroutine(CardDisolving());
+        if (isDiscarded) DeselectCard();
+        cardImage.color = Color.green;
+        StartCoroutine(CardDisolving(isDiscarded));
     }
-    private IEnumerator CardDisolving()
+    private IEnumerator CardDisolving(bool isDiscarded = true)
     {
+        if (isDisolving) yield break;
+        isDisolving = true;
         for (int i = 0; i <= 59; i++)
         {
+            if (!isDisolving) break;
             cardImage.material.Lerp(cardImage.material, DisolvingMaterialFinished, i / 59f);
             yield return new WaitForEndOfFrame();
         }
-        CardDiscarded?.Invoke(CardData);
+        isDisolving = false;
+        if (isDiscarded) Discard();
     }
-    public IEnumerator LerpInDirection(Vector2 direction, float time = 30f)
+    public IEnumerator CardResolving()
+    {
+        isDisolving = false;
+        cardImage.material = new Material(DisolvingMaterialFinished) { enableInstancing = true };
+        for (int i = 0; i <= 59; i++)
+        {
+            cardImage.material.Lerp(cardImage.material, DisolvingMaterialStart, i / 59f);
+            yield return new WaitForEndOfFrame();
+        }
+    }
+    public void Discard()
+    {
+        CardDiscarded?.Invoke(CardData);
+
+    }
+    public IEnumerator LerpInDirection(Vector2 direction, float time = 15f)
     {
         var timer = cardMovementCurve.keys[1].time;
         Vector2 startPos = cardImage.rectTransform.anchoredPosition;
@@ -112,7 +132,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
         {
             HandCardVisual card = selectedCards[i];
             card.isDragging = true;
-            cardImage.color = new Color(0, 1, 0, 0.5f);
+            card.cardImage.color = new Color(0, 1, 0, 0.5f);
         }
     }
     public void OnDrag(PointerEventData eventData)
@@ -129,7 +149,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
             if (cardVisual.IsActive)
             {
                 var offset = center + index;
-                StartCoroutine(LerpInDirection(new Vector2(offset, pos.y),3f));
+                cardVisual.transform.position = new Vector2(offset, pos.y - 175);
                 index += step;
             }
         }
@@ -210,12 +230,17 @@ public class SelectedCards : List<HandCardVisual>
             }
             Add(card);
         }
+        TriggerChanged();
+
+    }
+    public void TriggerChanged()
+    {
         Changed?.Invoke();
     }
     public bool DeselectCard(HandCardVisual card)
     {
         var changed = Remove(card);
-        Changed?.Invoke();
+        TriggerChanged();
         return changed;
     }
     public int CardValues()

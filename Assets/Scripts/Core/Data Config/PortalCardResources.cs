@@ -18,7 +18,7 @@ public class PortalCardResources : CardResources
 [Serializable]
 public class PortalCardData : CardData
 {
-    [SerializeField] private Enemy ClickedFirst;
+    static public Enemy ClickedFirst;
     public PortalCardData(List<string> data) : base(data)
     {
     }
@@ -44,18 +44,23 @@ public class PortalCardData : CardData
         if (ClickedFirst == null)
         {
             ClickedFirst = enemy;
+            var card1 = HandCardVisual.selectedCards[0];
+            HandCardVisual.selectedCards[0].Use(false);
+            HandCardVisual.selectedCards.TriggerChanged();
+            CardIsPlayed?.Invoke(card1.CardData, enemy.GetEffectSpawnPosition());
             return;
         }
         if (ClickedFirst == enemy)
         {
             ClickedFirst = null;
+            //HandCardVisual.selectedCards[0].StartCoroutine(HandCardVisual.selectedCards[0].CardResolving());
+            HandCardVisual.selectedCards[0].DeselectCard();
             return;
         }
-        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
-        var card = HandCardVisual.selectedCards.UseCards();
         manager.RPC_SwapEnemies(enemy, ClickedFirst);
+        var card = HandCardVisual.selectedCards.UseCards();
+        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
         ClickedFirst = null;
-        CardIsPlayed?.Invoke(card, enemy.GetEffectSpawnPosition());
     }
 
 }
