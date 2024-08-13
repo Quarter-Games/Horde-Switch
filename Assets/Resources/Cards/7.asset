@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 7
   m_EditorClassIdentifier: 
   OnBeingPlayed: {fileID: 0}
-  OnActivateEffect: {fileID: 0}
+  OnActivateEffect: {fileID: 748801978921803757, guid: 285f38e30ac398144b37af35d6e98563, type: 3}
   OnDeathEffect: {fileID: 0}
   cardSprite: {fileID: 21300000, guid: ab2053098073ff4488b17c66898f9f05, type: 3}
   data:
