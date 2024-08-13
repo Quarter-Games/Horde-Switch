@@ -219,6 +219,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     public void RPC_SetEnemy(int tileIndex, Enemy enemy)
     {
         GridTiles[tileIndex].SetEnemy(enemy);
+        CardClicked();
     }
     [Rpc]
     private void RPC_CallDamageEvent(PlayerController player)
@@ -231,16 +232,13 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     private void RPC_CallTurnChangeEvent(PlayerController player)
     {
         TurnChanged?.Invoke(player);
+        CardClicked();
     }
     [Rpc]
     public void RPC_UpdateCardState()
     {
-        HandCardVisual.selectedCards.TriggerChanged();
         CardStateUpdate?.Invoke();
-        foreach (var tile in GridTiles)
-        {
-            tile.UpdateHighlightStatus(tile.HighlightStatus);
-        }
+        CardClicked();
     }
     [Rpc]
     private void RPC_InvokePlayerDieEvent(PlayerController player)
@@ -262,6 +260,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     public void RPC_ClearSelectedCards()
     {
         HandCardVisual.selectedCards.Clear();
+        CardClicked();
     }
     #endregion
 

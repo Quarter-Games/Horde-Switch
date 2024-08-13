@@ -25,6 +25,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     [SerializeField] AnimationCurve cardMovementCurve;
     public static FloorTile lastHoverTile;
     private bool isDisolving;
+    private Coroutine currentMovementRoutine;
 
     public void SetUpVisual(Card card)
     {
@@ -121,7 +122,8 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     public bool IsActive => cardImage.enabled;
     public void SetNewAnchoredPosition(Vector2 newPos)
     {
-        StartCoroutine(LerpInDirection(newPos - cardImage.rectTransform.anchoredPosition));
+        if (currentMovementRoutine != null) StopCoroutine(currentMovementRoutine);
+        currentMovementRoutine = StartCoroutine(LerpInDirection(newPos - cardImage.rectTransform.anchoredPosition));
     }
 
     public void OnBeginDrag(PointerEventData eventData)
