@@ -186,7 +186,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         _opponentPlayer.IsPlayedInThisTurn = false;
 
     }
-    
+
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_TurnSwap()
     {
@@ -357,24 +357,23 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
 
         FloorTile tile = GridTiles[11 - ((position.z) * 4 + position.x + 1)];
         Vector3 WorldPos = tile.transform.position + tile.transform.right;
-        //Vector3Int position = new Vector3Int((int)pos.x, (int)pos.y, (int)pos.z);
-        //var WorldPos = grid.CellToWorld(position);
-        WorldPos -= new Vector3(1f, 0, 0);
-        var enemy = Runner.Spawn(enemyPrefab, position: WorldPos, rotation: Quaternion.identity, PlayerRef.MasterClient);
-        enemy.transform.parent = transform;
-        enemy.RowNumber = position.z;
-        enemy.ColumnNumber = position.x;
-        RPC_SetEnemy(11 - ((position.z) * 4 + position.x + 1), enemy);
+
         if (EnemyDeck.Count == 0)
         {
-            //Reshuffling Enemy Deck
             EnemyDeck = new(EnemyGraveyard);
             EnemyGraveyard = new Deck();
         }
         var _deck = EnemyDeck;
         var card = _deck.Draw();
         EnemyDeck = _deck;
+
+        WorldPos -= new Vector3(1f, 0, 0);
+        var enemy = Runner.Spawn((card.CardValue as CreatureCardResources).enemyPrefab, position: WorldPos, rotation: Quaternion.identity, PlayerRef.MasterClient);
         enemy.Card = card;
+        enemy.transform.parent = transform;
+        enemy.RowNumber = position.z;
+        enemy.ColumnNumber = position.x;
+        RPC_SetEnemy(11 - ((position.z) * 4 + position.x + 1), enemy);
         EnemyList.Add(enemy);
     }
     private void RemovePlayerHealth(PlayerController player)
