@@ -15,11 +15,10 @@ MonoBehaviour:
   OnBeingPlayed: {fileID: 0}
   OnActivateEffect: {fileID: 0}
   OnDeathEffect: {fileID: 0}
-  cardSprite: {fileID: 21300000, guid: 5dba86995af8d71409c1872064799410, type: 3}
+  cardSprite: {fileID: -3587489094229147175, guid: edaa2fb592aa05f4aac60f77c4475a1f, type: 3}
   data:
     ID: 11
     Value: 11
     Name: Portal
     ownerType: 0
     cardType: 2
-    ClickedFirst: {fileID: 0}

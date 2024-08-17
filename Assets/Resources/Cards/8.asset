@@ -15,7 +15,7 @@ MonoBehaviour:
   OnBeingPlayed: {fileID: 0}
   OnActivateEffect: {fileID: 3528716862124448564, guid: 29ad8dd89bf86c14889ceceebfb44860, type: 3}
   OnDeathEffect: {fileID: 0}
-  cardSprite: {fileID: 21300000, guid: cce77edb4ea84b547924baef22f551bc, type: 3}
+  cardSprite: {fileID: -2448039413192669124, guid: 61f3f89dc30eecc4cb525a0a44807a9e, type: 3}
   data:
     ID: 8
     Value: 8

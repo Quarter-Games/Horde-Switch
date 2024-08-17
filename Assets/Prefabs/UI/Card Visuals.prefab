@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 42dabc7f948ec7a45bd97f99a29fc867, type: 3}
+  m_Sprite: {fileID: -101560770527955782, guid: edaa2fb592aa05f4aac60f77c4475a1f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -88,9 +88,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80f5dca3fa25849418cb7ec0130f97d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDragging: 0
   CardData:
     ID: 0
   cardImage: {fileID: 3878364874562995885}
+  isComingToHand: 0
   DisolvingMaterialStart: {fileID: 2100000, guid: 2d07d8acba2a11247843d38617cf4bc1, type: 2}
   DisolvingMaterialFinished: {fileID: 2100000, guid: c3fd87cae94794f408a9537aab5b9cc2, type: 2}
   cardMovementCurve:
