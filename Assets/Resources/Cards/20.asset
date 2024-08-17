@@ -18,7 +18,7 @@ MonoBehaviour:
   cardSprite: {fileID: 0}
   data:
     ID: 20
-    Value: 7
+    Value: 6
     Name: 
     ownerType: 1
     cardType: 0

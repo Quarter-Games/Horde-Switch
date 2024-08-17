@@ -26,6 +26,8 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     public static FloorTile lastHoverTile;
     private bool isDisolving;
     private Coroutine currentMovementRoutine;
+    [SerializeField] private bool isEnemyCard;
+    [SerializeField] public int IndexInHand;
 
     public void SetUpVisual(Card card)
     {
@@ -43,8 +45,21 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     }
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (isEnemyCard)
+        {
+            CalculateClickOnEnemyCard();
+            return;
+        }
         if (isDragging) return;
         OnCardClicked?.Invoke(this);
+    }
+    private void CalculateClickOnEnemyCard()
+    {
+        if (selectedCards.Count != 1) return;
+        if (selectedCards[0].CardData.CardValue is SniperCardResource sc)
+        {
+            (sc.DataOfCard as SniperCardData).ApplyEffect(TurnManager.Instance, this);
+        }
     }
     public void SelectCard()
     {
@@ -128,6 +143,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (isEnemyCard) return;
         if (isDragging) return;
         if (!selectedCards.Contains(this)) OnCardClicked?.Invoke(this);
         for (int i = 0; i < selectedCards.Count; i++)

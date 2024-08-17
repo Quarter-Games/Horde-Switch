@@ -27,6 +27,13 @@ public class PlayerController : NetworkBehaviour
         Hand = handCopy;
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+    public void RPC_RemoveCardAt(int index)
+    {
+        var handCopy = Hand;
+        handCopy.RemoveAt(index);
+        Hand = handCopy;
+    }
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_DrawCard(Deck cards)
     {
         var handCopy = Hand;

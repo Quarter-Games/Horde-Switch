@@ -22,4 +22,5 @@ public class DwarfPlaneCardData : CardData
     public DwarfPlaneCardData(List<string> data) : base(data)
     {
     }
+    public override bool IsMonoSelectedCard() => true;
 }

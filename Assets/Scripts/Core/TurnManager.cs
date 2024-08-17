@@ -186,7 +186,6 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         _opponentPlayer.IsPlayedInThisTurn = false;
 
     }
-
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_TurnSwap()
     {
@@ -201,11 +200,21 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
             RPC_CallTurnChangeEvent(_opponentPlayer);
         }
     }
-
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     public void RPC_Disconnect(PlayerRef player)
     {
         Runner.Disconnect(player);
+    }
+    [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
+    public void RPC_UseSniperCard(int cardIndex)
+    {
+        // Remove the card from the inactive player's hand
+        var inactivePlayer = _localPlayer.IsThisTurn ? _opponentPlayer : _localPlayer;
+        var cardToRemove = inactivePlayer.Hand[cardIndex];
+        inactivePlayer.RPC_RemoveCard(cardToRemove);
+
+        // Draw a new card for the inactive player
+        DrawCardForPlayer(inactivePlayer);
     }
     #endregion
 

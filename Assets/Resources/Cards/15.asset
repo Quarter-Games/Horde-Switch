@@ -18,8 +18,8 @@ MonoBehaviour:
   cardSprite: {fileID: 0}
   data:
     ID: 15
-    Value: 2
-    Name: 
+    Value: 1
+    Name: Bug
     ownerType: 1
     cardType: 0
   enemyPrefab: {fileID: 3976160424674780435, guid: ac18ba92b1ac112418d7345b6c10e38b, type: 3}

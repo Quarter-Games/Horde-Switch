@@ -38,6 +38,9 @@ abstract public class CardResources : DataBaseSynchronizedScribtableObject
                 case CardType.DwarfishPlane:
                     cardResources = DwarfPlaneCardResource.Create(data);
                     break;
+                case CardType.Sniper:
+                    cardResources = SniperCardResource.Create(data);
+                    break;
             }
 
             var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<CardResources>($"Assets/Resources/Cards/{cardResources.DataOfCard.ID}.asset");

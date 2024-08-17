@@ -1714,7 +1714,6 @@ MonoBehaviour:
   networkRunner: {fileID: 1328424562}
   RoomNameInputField: {fileID: 1425031081}
   WaitingWindow: {fileID: 147018513}
-  _gameSettings: {fileID: 0}
   _turnManagerPrefab: {fileID: 6191694490732602978, guid: 9320ac09e3caa564c8099a7649ee16c1, type: 3}
   Callbacks: {fileID: 1328424561}
   PlayButton: {fileID: 415881972}

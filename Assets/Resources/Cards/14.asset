@@ -9,17 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 573e136b1be6ee446a7a2c3d9fd6f9f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 7721ba71b5220214da44e9961f831ee5, type: 3}
   m_Name: 14
   m_EditorClassIdentifier: 
   OnBeingPlayed: {fileID: 0}
   OnActivateEffect: {fileID: 0}
   OnDeathEffect: {fileID: 0}
-  cardSprite: {fileID: 0}
+  cardSprite: {fileID: 204786658465091572, guid: edaa2fb592aa05f4aac60f77c4475a1f, type: 3}
   data:
     ID: 14
-    Value: 1
-    Name: Bug
-    ownerType: 1
-    cardType: 0
-  enemyPrefab: {fileID: 3976160424674780435, guid: ac18ba92b1ac112418d7345b6c10e38b, type: 3}
+    Value: 14
+    Name: Sniper
+    ownerType: 0
+    cardType: 5

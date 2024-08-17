@@ -27,6 +27,10 @@ public struct Hand : INetworkStruct
         var index = ListOfCards.IndexOf(card);
         ListOfCards.Set(index, default);
     }
+    readonly public void RemoveAt(int index)
+    {
+        ListOfCards.Set(index, default);
+    }
     readonly public Card this[int index]
     {
         get { return ListOfCards[index]; }

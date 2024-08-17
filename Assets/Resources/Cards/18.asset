@@ -18,8 +18,8 @@ MonoBehaviour:
   cardSprite: {fileID: 0}
   data:
     ID: 18
-    Value: 5
+    Value: 4
     Name: 
     ownerType: 1
     cardType: 0
-  enemyPrefab: {fileID: 5841209029584867788, guid: 59a29616e238d004cb0f5fc6454a1d2b, type: 3}
+  enemyPrefab: {fileID: 3976160424674780435, guid: ac18ba92b1ac112418d7345b6c10e38b, type: 3}
