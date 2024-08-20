@@ -19,6 +19,7 @@ public class PortalCardResources : CardResources
 public class PortalCardData : CardData
 {
     static public Enemy ClickedFirst;
+    static public ParticleSystem PortalEffect;
     public PortalCardData(List<string> data) : base(data)
     {
     }
@@ -47,9 +48,10 @@ public class PortalCardData : CardData
             var card1 = HandCardVisual.selectedCards[0];
             HandCardVisual.selectedCards[0].Use(false);
             HandCardVisual.selectedCards.TriggerChanged();
-            CardIsPlayed?.Invoke(card1.CardData, enemy.GetEffectSpawnPosition());
+            PortalEffect = GameObject.Instantiate(card1.CardData.CardValue.OnActivateEffect, enemy.transform.position + Vector3.up, Quaternion.Euler(-90, 0, 0));
             return;
         }
+        PortalEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         if (ClickedFirst == enemy)
         {
             ClickedFirst = null;

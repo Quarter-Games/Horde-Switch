@@ -65,7 +65,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         Enemy.OnEnemyClick += EnemyClick;
         GameplayUIHandler.RequestTurnSwap += RPC_EndTurnRequest;
         HandCardVisual.selectedCards.Changed += CardClicked;
-        HandCardVisual.CardDiscarded += RPC_CardDiscarded;
+        GameplayUIHandler.DiscardCardMultiplayer += RPC_CardDiscarded;
         HandCardVisual.OnCardPlaySound += RPC_PlayCardSound;
         CardData.CardIsPlayed += RPC_CardIsPlayedVFX;
 
@@ -77,7 +77,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         Enemy.OnEnemyClick -= EnemyClick;
         GameplayUIHandler.RequestTurnSwap -= RPC_EndTurnRequest;
         HandCardVisual.selectedCards.Changed -= CardClicked;
-        HandCardVisual.CardDiscarded -= RPC_CardDiscarded;
+        GameplayUIHandler.DiscardCardMultiplayer -= RPC_CardDiscarded;
         HandCardVisual.OnCardPlaySound -= RPC_PlayCardSound;
         CardData.CardIsPlayed -= RPC_CardIsPlayedVFX;
 
@@ -86,19 +86,23 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
 
     #region RPC Host Methods
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
-    private void RPC_CardDiscarded(Card card)
+    private void RPC_CardDiscarded(int cardindex)
     {
-        var discard = DiscardPile;
-        discard.AddCard(card);
-        DiscardPile = discard;
+        Card toAddToDiscard;
         if (_localPlayer.IsThisTurn)
         {
-            _localPlayer.RPC_RemoveCard(card);
+            toAddToDiscard = _localPlayer.Hand[cardindex];
+            _localPlayer.RPC_RemoveCardAt(cardindex);
+            //_localPlayer.RPC_RemoveCard(card);
         }
         else
         {
-            _opponentPlayer.RPC_RemoveCard(card);
+            toAddToDiscard = _localPlayer.Hand[cardindex];
+            _opponentPlayer.RPC_RemoveCardAt(cardindex);
         }
+        var discard = DiscardPile;
+        discard.AddCard(toAddToDiscard);
+        DiscardPile = discard;
         RPC_UpdateCardState();
 
 
@@ -396,8 +400,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
 
         for (int i = 0; i < player.Hand.Count; i++)
         {
-            var card = player.Hand[i];
-            RPC_CardDiscarded(card);
+            RPC_CardDiscarded(i);
         }
         for (int i = 0; i < 4; i++)
         {

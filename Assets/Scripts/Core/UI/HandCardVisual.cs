@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    public static event Action<Card> CardDiscarded;
+    public static event Action<HandCardVisual> CardDiscarded;
     public static SelectedCards selectedCards = new();
     public static Action<HandCardVisual> OnCardClicked;
     public static event Action<Card> OnCardPlaySound;
@@ -69,7 +69,6 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
             return;
         }
         selectedCards.SelectCard(this);
-        cardImage.color = Color.green;
     }
     public void DeselectCard()
     {
@@ -91,7 +90,6 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     {
         isDragging = false;
         if (isDiscarded) DeselectCard();
-        cardImage.color = Color.green;
         StartCoroutine(CardDisolving(isDiscarded));
     }
     private IEnumerator CardDisolving(bool isDiscarded = true)
@@ -119,7 +117,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     }
     public void Discard()
     {
-        CardDiscarded?.Invoke(CardData);
+        CardDiscarded?.Invoke(this);
 
     }
     public IEnumerator LerpInDirection(Vector2 direction, float time = 15f)
@@ -150,7 +148,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
         {
             HandCardVisual card = selectedCards[i];
             card.isDragging = true;
-            card.cardImage.color = new Color(0, 1, 0, 0.5f);
+            card.cardImage.color = new Color(1, 1, 1, 0.5f);
         }
     }
     public void OnDrag(PointerEventData eventData)
@@ -180,7 +178,8 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
                 if (!selectedCards.GetValidEnemies(TurnManager.Instance.EnemyList.ToList(), TurnManager.Instance._localPlayer.MainRow).Contains(enemy))
                     return;
                 lastHoverTile = TurnManager.Instance.GridTiles.Find(x => x.Enemy == enemy);
-                lastHoverTile.UpdateHighlightStatus(HighlightStatus.Selected);
+                lastHoverTile.OnPointerEnter(null);
+
                 Debug.Log("Enemy");
             }
             else if (hit.collider.TryGetComponent(out FloorTile tile))
@@ -189,7 +188,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
                 if (!selectedCards.GetValidEnemies(TurnManager.Instance.EnemyList.ToList(), TurnManager.Instance._localPlayer.MainRow).Contains(tile.Enemy))
                     return;
                 lastHoverTile = tile;
-                tile.UpdateHighlightStatus(HighlightStatus.Selected);
+                tile.OnPointerEnter(null);
                 Debug.Log("Tile");
             }
             else
@@ -208,7 +207,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     private void ClearLastHoveredTile()
     {
         if (lastHoverTile == null) return;
-        lastHoverTile.UpdateHighlightStatus(HighlightStatus.Clickable);
+        lastHoverTile.OnPointerExit(null);
         lastHoverTile = null;
     }
     public void OnEndDrag(PointerEventData eventData)
