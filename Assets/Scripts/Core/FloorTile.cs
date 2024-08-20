@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -63,6 +64,17 @@ public class FloorTile : MonoBehaviour, IPointerClickHandler,IPointerEnterHandle
         if (HighlightStatus == HighlightStatus.Clickable)
         {
             UpdateHighlightStatus(HighlightStatus.Selected);
+            //Dirty hack for plane card
+            if (HandCardVisual.selectedCards[0].CardData.CardValue is DwarfPlaneCardResource)
+            {
+                var columnNumber = enemy.ColumnNumber;
+                if (columnNumber == -1) columnNumber = 0;
+                else if (columnNumber == 0) columnNumber = 1;
+                else if (columnNumber == 1) columnNumber = 0;
+                else if (columnNumber == 2) columnNumber = 1;
+                var tile = TurnManager.Instance.GridTiles.First(x=>x.enemy.ColumnNumber == columnNumber && x.enemy.RowNumber == RowNumber);
+                tile.UpdateHighlightStatus(HighlightStatus.Selected);
+            }
         }
     }
 
@@ -72,6 +84,17 @@ public class FloorTile : MonoBehaviour, IPointerClickHandler,IPointerEnterHandle
         if (HighlightStatus == HighlightStatus.Selected)
         {
             UpdateHighlightStatus(HighlightStatus.Clickable);
+            //Dirty hack for plane card
+            if (HandCardVisual.selectedCards[0].CardData.CardValue is DwarfPlaneCardResource)
+            {
+                var columnNumber = enemy.ColumnNumber;
+                if (columnNumber == -1) columnNumber = 0;
+                else if (columnNumber == 0) columnNumber = 1;
+                else if (columnNumber == 1) columnNumber = 0;
+                else if (columnNumber == 2) columnNumber = 1;
+                var tile = TurnManager.Instance.GridTiles.First(x => x.enemy.ColumnNumber == columnNumber && x.enemy.RowNumber == RowNumber);
+                tile.UpdateHighlightStatus(HighlightStatus.Clickable);
+            }
         }
     }
 }

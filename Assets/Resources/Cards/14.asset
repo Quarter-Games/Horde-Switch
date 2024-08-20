@@ -18,7 +18,7 @@ MonoBehaviour:
   cardSprite: {fileID: 204786658465091572, guid: edaa2fb592aa05f4aac60f77c4475a1f, type: 3}
   data:
     ID: 14
-    Value: 14
+    Value: 0
     Name: Sniper
     ownerType: 0
     cardType: 5

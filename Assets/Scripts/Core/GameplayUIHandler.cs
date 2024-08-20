@@ -8,13 +8,14 @@ using System.Linq;
 
 public class GameplayUIHandler : MonoBehaviour
 {
+    public static event Action<int> DiscardCardMultiplayer;
     public static Action RequestTurnSwap;
     [SerializeField] PlayerController _playerController;
     [SerializeField] PlayerController _opponentController;
     [SerializeField] TMP_Text playerAmount;
     [SerializeField] TMP_Text opponentAmount;
     [SerializeField] List<HandCardVisual> PlayerCards;
-    [SerializeField] List<GameObject> EnemyCards;
+    [SerializeField] List<HandCardVisual> EnemyCards;
     [SerializeField] PlayerUIContainer _localPlayerUIContainer;
     [SerializeField] PlayerUIContainer _enemyPlayerUIContainer;
     [SerializeField] TMP_Text TurnText;
@@ -32,6 +33,24 @@ public class GameplayUIHandler : MonoBehaviour
         TurnManager.PlayerDied += OnPlayerDied;
         Enemy.MinePlaced += Enemy_MinePlaced;
         HandCardVisual.selectedCards.Changed += UpdateCardVisuals;
+        HandCardVisual.CardDiscarded += DiscardCard;
+    }
+
+
+    private void OnDisable()
+    {
+        HandCardVisual.OnCardClicked -= CardClicked;
+        TurnManager.TurnChanged -= OnTurnSwap;
+        TurnManager.CardStateUpdate -= UpdateCardVisuals;
+        TurnManager.PlayerGotDamage -= UpdateHealth;
+        TurnManager.PlayerDied -= OnPlayerDied;
+        Enemy.MinePlaced -= Enemy_MinePlaced;
+        HandCardVisual.selectedCards.Changed -= UpdateCardVisuals;
+        HandCardVisual.CardDiscarded -= DiscardCard;
+    }
+    private void DiscardCard(HandCardVisual visual)
+    {
+        DiscardCardMultiplayer?.Invoke(PlayerCards.IndexOf(visual));
     }
 
     private void Enemy_MinePlaced()
@@ -117,8 +136,15 @@ public class GameplayUIHandler : MonoBehaviour
         if (_playerController.IsThisTurn)
         {
             visual.SelectCard();
+            ChangeEnemyCardsVisual();
         }
     }
+
+    private void ChangeEnemyCardsVisual()
+    {
+        EnemyCards.ForEach(x => x.cardImage.color = HandCardVisual.selectedCards.Any(x => x.CardData.CardValue.GetType() == typeof(SniperCardResource)) ? Color.green : Color.white);
+    }
+
     private void OnPlayerCreated(PlayerController controller)
     {
         if (controller.isLocalPlayer)
@@ -167,7 +193,7 @@ public class GameplayUIHandler : MonoBehaviour
         if (_opponentController == null) return;
         for (int i = 0; i < _opponentController.Hand.Count; i++)
         {
-            GameObject cardVisual = EnemyCards[i];
+            GameObject cardVisual = EnemyCards[i].gameObject;
             if (_opponentController.Hand[i].ID <= 0)
             {
                 cardVisual.SetActive(false);
@@ -175,23 +201,14 @@ public class GameplayUIHandler : MonoBehaviour
             }
             cardVisual.SetActive(true);
         }
+        ChangeEnemyCardsVisual();
     }
-
     public void EndTurn()
     {
         if (!_playerController.IsThisTurn) return;
         RequestTurnSwap?.Invoke();
     }
-    private void OnDisable()
-    {
-        HandCardVisual.OnCardClicked -= CardClicked;
-        TurnManager.TurnChanged -= OnTurnSwap;
-        TurnManager.CardStateUpdate -= UpdateCardVisuals;
-        TurnManager.PlayerGotDamage -= UpdateHealth;
-        TurnManager.PlayerDied -= OnPlayerDied;
-        Enemy.MinePlaced -= Enemy_MinePlaced;
-        HandCardVisual.selectedCards.Changed -= UpdateCardVisuals;
-    }
+
 }
 [Serializable]
 public class PlayerUIContainer
