@@ -72,7 +72,7 @@ public class FloorTile : MonoBehaviour, IPointerClickHandler,IPointerEnterHandle
                 else if (columnNumber == 0) columnNumber = 1;
                 else if (columnNumber == 1) columnNumber = 0;
                 else if (columnNumber == 2) columnNumber = 1;
-                var tile = TurnManager.Instance.GridTiles.First(x=>x.enemy.ColumnNumber == columnNumber && x.enemy.RowNumber == RowNumber);
+                var tile = TurnManager.Instance.GridTiles.First(x=>x.enemy.ColumnNumber == columnNumber && x.enemy.RowNumber == enemy.RowNumber);
                 tile.UpdateHighlightStatus(HighlightStatus.Selected);
             }
         }
@@ -92,7 +92,7 @@ public class FloorTile : MonoBehaviour, IPointerClickHandler,IPointerEnterHandle
                 else if (columnNumber == 0) columnNumber = 1;
                 else if (columnNumber == 1) columnNumber = 0;
                 else if (columnNumber == 2) columnNumber = 1;
-                var tile = TurnManager.Instance.GridTiles.First(x => x.enemy.ColumnNumber == columnNumber && x.enemy.RowNumber == RowNumber);
+                var tile = TurnManager.Instance.GridTiles.First(x => x.enemy.ColumnNumber == columnNumber && x.enemy.RowNumber == enemy.RowNumber);
                 tile.UpdateHighlightStatus(HighlightStatus.Clickable);
             }
         }
