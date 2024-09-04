@@ -7,6 +7,7 @@ public class PlayerController : NetworkBehaviour
 {
     public static List<PlayerController> players = new();
     public static event System.Action<PlayerController> PlayerCreated;
+    [Networked] public string PlayerName { get => default; set { } }
     [Networked] public int PlayerID { get => default; set { } }
     public bool isLocalPlayer;
     [Networked] public int MainRow { get => default; set { } }
@@ -44,6 +45,7 @@ public class PlayerController : NetworkBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
+        PlayerName = MainMenuManager.playerName;
     }
     public override void Spawned()
     {

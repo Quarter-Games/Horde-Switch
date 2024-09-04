@@ -85,6 +85,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     #endregion
 
     #region RPC Host Methods
+
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
     private void RPC_CardDiscarded(int cardindex)
     {
@@ -220,6 +221,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         // Draw a new card for the inactive player
         DrawCardForPlayer(inactivePlayer);
     }
+
     #endregion
 
     #region RPC Clients Methods

@@ -12,6 +12,8 @@ public class GameplayUIHandler : MonoBehaviour
     public static Action RequestTurnSwap;
     [SerializeField] PlayerController _playerController;
     [SerializeField] PlayerController _opponentController;
+    [SerializeField] TMP_Text _localPlayerName;
+    [SerializeField] TMP_Text _enemyPlayerName;
     [SerializeField] TMP_Text playerAmount;
     [SerializeField] TMP_Text opponentAmount;
     [SerializeField] List<HandCardVisual> PlayerCards;
@@ -147,13 +149,24 @@ public class GameplayUIHandler : MonoBehaviour
 
     private void OnPlayerCreated(PlayerController controller)
     {
+        
         if (controller.isLocalPlayer)
         {
             _playerController = controller;
+            _localPlayerName.text = controller.PlayerName;
+            if (controller.IsThisTurn)
+            {
+                TurnText.text = "Your Turn";
+            }
+            else
+            {
+                TurnText.text = "Opponent Turn";
+            }
         }
         else
         {
             _opponentController = controller;
+            _enemyPlayerName.text = controller.PlayerName;
         }
         UpdateCardVisuals();
     }

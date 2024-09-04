@@ -11,8 +11,6 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
 {
     [SerializeField] Camera _camera;
     [SerializeField] GameObject _CameraPositionForSecondPLayer;
-    [SerializeField] TMP_Text RoomName;
-    public PlayerController PlayerPrefab;
     NetworkRunner runner;
     [SerializeField] NetworkEvents _networkRunnerCallbacks;
 
@@ -24,7 +22,6 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
         _networkRunnerCallbacks.PlayerLeft.AddListener(PlayerLeft);
         runner = NetworkRunner.GetRunnerForScene(SceneManager.GetActiveScene());
         PlayerJoined(runner.LocalPlayer);
-        RoomName.text = runner.SessionInfo.Name;
     }
 
     private void PlayerLeft(NetworkRunner arg0, PlayerRef arg1)
@@ -36,7 +33,6 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
 
     private void OnDisconnect(NetworkRunner arg0, NetDisconnectReason arg1)
     {
-
         Debug.Log("Player LEFT");
         Destroy(TurnManager.Instance.gameObject);
         SceneManager.LoadScene("Main Menu");

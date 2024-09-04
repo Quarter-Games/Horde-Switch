@@ -1496,6 +1496,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerController: {fileID: 0}
   _opponentController: {fileID: 0}
+  _localPlayerName: {fileID: 769848841}
+  _enemyPlayerName: {fileID: 856184201}
   playerAmount: {fileID: 0}
   opponentAmount: {fileID: 0}
   PlayerCards:
@@ -5516,8 +5518,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _camera: {fileID: 1282245777}
   _CameraPositionForSecondPLayer: {fileID: 1582631615}
-  RoomName: {fileID: 666126703}
-  PlayerPrefab: {fileID: 8372177336043948876, guid: d0ba7f53f9868f74f9779f8ee06d4902, type: 3}
   _networkRunnerCallbacks: {fileID: 0}
 --- !u!4 &1852246253
 Transform:
