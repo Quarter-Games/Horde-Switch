@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fe18a8e07e0524f4c8aca53c8d2bc752
+guid: a992186f982f23e439bd09590218c3b6
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -108,19 +108,42 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Unclickable_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 243
+        width: 1024
+        height: 538
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 78, y: 71, z: 78, w: 68}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8afd4f3e40ea9fe4e88657610c0d6b84
+      internalID: 1877725354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: aae937bd8c633174cacacf02dfe01f6c
     internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Unclickable_0: 1877725354
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

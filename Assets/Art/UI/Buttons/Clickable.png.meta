@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fe18a8e07e0524f4c8aca53c8d2bc752
+guid: 5cc17d9d065df5741a1fa7ddccba94c5
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -108,19 +108,42 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Clickable_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 243
+        width: 1024
+        height: 538
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 77, y: 69, z: 77, w: 67}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7699c02a45fc1144a58ce75bbef7cf8
+      internalID: -1814675850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 109bc20f5faab8548ae6d04e0d4245d3
     internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Clickable_0: -1814675850
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
