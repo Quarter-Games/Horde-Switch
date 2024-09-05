@@ -10,6 +10,7 @@ public class GameplayUIHandler : MonoBehaviour
 {
     public static event Action<int> DiscardCardMultiplayer;
     public static Action RequestTurnSwap;
+    [SerializeField] PlayerAvatars PlayerAvatars;
     [SerializeField] PlayerController _playerController;
     [SerializeField] PlayerController _opponentController;
     [SerializeField] TMP_Text _localPlayerName;
@@ -25,6 +26,9 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] Image PopUpWindow;
     [SerializeField] TMP_Text PopUpText;
     [SerializeField] Button GameFinishButton;
+    [SerializeField] TMP_Text CountDown;
+    [SerializeField] Image TimerImage;
+    [SerializeField] Button EndTurnButton;
 
     private void OnEnable()
     {
@@ -97,6 +101,11 @@ public class GameplayUIHandler : MonoBehaviour
             OnPlayerCreated(player);
         }
     }
+    private void Update()
+    {
+        CountDown.text = ((int)TurnManager.Instance.Timer).ToString();
+        TimerImage.fillAmount = TurnManager.Instance.Timer / TurnManager.MAX_TIME;
+    }
 
     private void OnTurnSwap(PlayerController controller)
     {
@@ -105,6 +114,7 @@ public class GameplayUIHandler : MonoBehaviour
         {
             Debug.Log("Your Turn");
             TurnText.text = "Your Turn";
+            EndTurnButton.interactable = true;
             StartCoroutine(ShowAndHideMessage("Your Turn"));
         }
         else
@@ -115,6 +125,7 @@ public class GameplayUIHandler : MonoBehaviour
             }
             Debug.Log("Opponent Turn");
             TurnText.text = "Opponent Turn";
+            EndTurnButton.interactable = true;
             StartCoroutine(ShowAndHideMessage("Opponent Turn"));
         }
         UpdateCardVisuals();
@@ -149,23 +160,27 @@ public class GameplayUIHandler : MonoBehaviour
 
     private void OnPlayerCreated(PlayerController controller)
     {
-        
+
         if (controller.isLocalPlayer)
         {
             _playerController = controller;
             _localPlayerName.text = controller.PlayerName;
+            _localPlayerUIContainer.PlayerAvatar.sprite = PlayerAvatars[controller.ImageID];
             if (controller.IsThisTurn)
             {
                 TurnText.text = "Your Turn";
+                EndTurnButton.interactable = true;
             }
             else
             {
                 TurnText.text = "Opponent Turn";
+                EndTurnButton.interactable = false;
             }
         }
         else
         {
             _opponentController = controller;
+            _enemyPlayerUIContainer.PlayerAvatar.sprite = PlayerAvatars[controller.ImageID];
             _enemyPlayerName.text = controller.PlayerName;
         }
         UpdateCardVisuals();
@@ -230,22 +245,24 @@ public class PlayerUIContainer
     public Image PlayerAvatar;
     public Image FirstHealthIndicator;
     public Image SecondHealthIndicator;
+    public Sprite FullHeart;
+    public Sprite EmptyHeart;
     public void UpdateHealth(int health)
     {
         if (health == 2)
         {
-            FirstHealthIndicator.color = Color.red;
-            SecondHealthIndicator.color = Color.red;
+            FirstHealthIndicator.sprite = FullHeart;
+            SecondHealthIndicator.sprite = FullHeart;
         }
         else if (health == 1)
         {
-            FirstHealthIndicator.color = Color.red;
-            SecondHealthIndicator.color = Color.black;
+            FirstHealthIndicator.sprite = FullHeart;
+            SecondHealthIndicator.sprite = EmptyHeart;
         }
         else
         {
-            FirstHealthIndicator.color = Color.black;
-            SecondHealthIndicator.color = Color.black;
+            FirstHealthIndicator.sprite = EmptyHeart;
+            SecondHealthIndicator.sprite = EmptyHeart;
         }
     }
 }

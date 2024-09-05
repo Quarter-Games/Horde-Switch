@@ -9,29 +9,53 @@ using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
+    public static string playerName;
+    public static int AvatarID;
     [SerializeField] NetworkRunner networkRunner;
     [SerializeField] TMPro.TMP_InputField RoomNameInputField;
     [SerializeField] GameObject WaitingWindow;
     [SerializeField] TurnManager _turnManagerPrefab;
     [SerializeField] NetworkEvents Callbacks;
     [SerializeField] Button PlayButton;
-    [SerializeField] TMPro.TMP_Text RoomNameText; 
+    [SerializeField] TMPro.TMP_Text RoomNameText;
     public TurnManager TurnManagerReference;
     [Header("Customization Screen")]
     [SerializeField] private TMPro.TMP_InputField PlayerNameInputField;
-    public static string playerName;
+    [SerializeField] List<Image> Avatars;
+    [SerializeField] PlayerAvatars playerAvatars;
+    [SerializeField] Image PlayerAvatar;
 
     public PlayerController PlayerPrefab;
-    private bool isRoomPrivate;
+    [SerializeField] private bool isRoomPrivate;
     private void Awake()
     {
         playerName = PlayerPrefs.GetString("PlayerName", "Player");
+        AvatarID = PlayerPrefs.GetInt("AvatarID", 0);
+        PlayerAvatar.sprite = playerAvatars[AvatarID];
+        for (int i = 0; i < Avatars.Count; i++)
+        {
+            Image avatar = Avatars[i];
+            if (i >= playerAvatars.Count) avatar.gameObject.SetActive(false);
+            else
+            {
+                avatar.sprite = playerAvatars[i];
+                avatar.gameObject.SetActive(true);
+            }
+        }
+        PlayerNameInputField.placeholder.GetComponent<TMPro.TMP_Text>().text = playerName;
         Application.targetFrameRate = 60;
         Callbacks.OnShutdown.AddListener(OnShutdown);
         Callbacks.OnSessionListUpdate.AddListener(SessionsUpdate);
         networkRunner.JoinSessionLobby(SessionLobby.Shared).ContinueWith(AfterSessionJoining);
         PlayerController.PlayerCreated += PlayerCreated;
 
+    }
+    public void SelectAvatar(int id)
+    {
+        if (id >= playerAvatars.Count) return;
+        AvatarID = id;
+        PlayerAvatar.sprite = playerAvatars[id];
+        PlayerPrefs.SetInt("AvatarID", id);
     }
 
     private void AfterSessionJoining(Task<StartGameResult> task)
@@ -41,7 +65,6 @@ public class MainMenuManager : MonoBehaviour
         {
             Debug.Log("Joined session lobby");
             PlayButton.interactable = true;
-            PlayerNameInputField.textComponent.text = playerName;
         }
         else
         {
@@ -86,7 +109,7 @@ public class MainMenuManager : MonoBehaviour
             PlayerCount = 2,
             GameMode = GameMode.AutoHostOrClient,
             SessionName = sessionName,
-            IsVisible = isRoomPrivate,
+            IsVisible = !isRoomPrivate,
             CustomLobbyName = networkRunner.LobbyInfo.Name
         };
         RoomNameText.text = isRoomPrivate ? "Your room name is: " + sessionName : "";
@@ -128,6 +151,7 @@ public class MainMenuManager : MonoBehaviour
             obj.isLocalPlayer = player == networkRunner.LocalPlayer;
         }
     }
+
     private void OnDestroy()
     {
         Callbacks.OnShutdown.RemoveListener(OnShutdown);

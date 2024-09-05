@@ -8,8 +8,9 @@ public class PlayerController : NetworkBehaviour
     public static List<PlayerController> players = new();
     public static event System.Action<PlayerController> PlayerCreated;
     [Networked] public string PlayerName { get => default; set { } }
+    [Networked] public int ImageID { get => default; set { } }
     [Networked] public int PlayerID { get => default; set { } }
-    public bool isLocalPlayer;
+    public bool isLocalPlayer { get; set; }
     [Networked] public int MainRow { get => default; set { } }
     [Networked] public bool IsThisTurn { get => default; set { } }
     [Networked] public Hand Hand { get => default; set { } }
@@ -45,7 +46,6 @@ public class PlayerController : NetworkBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
-        PlayerName = MainMenuManager.playerName;
     }
     public override void Spawned()
     {
@@ -55,6 +55,19 @@ public class PlayerController : NetworkBehaviour
     {
         isLocalPlayer = Runner.LocalPlayer.PlayerId == PlayerID;
         PlayerCreated?.Invoke(this);
+        if (isLocalPlayer)
+        {
+            RPC_SetNameAndImage(PlayerID, MainMenuManager.playerName, MainMenuManager.AvatarID);
+        }
+    }
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_SetNameAndImage(int ID, string Name, int imageID)
+    {
+        if (ID == PlayerID)
+        {
+            PlayerName = Name;
+            ImageID = imageID;
+        }
     }
     public Deck SetUp(Deck _deck, int HandSize)
     {

@@ -29,9 +29,12 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [Networked] public Deck PlayersDeck { get => default; set { } }
     [Networked] public Deck DiscardPile { get => default; set { } }
     [Networked] public Deck EnemyGraveyard { get => default; set { } }
+    [Networked] public float Timer { get => default; set { } }
+    public static int MAX_TIME = 60;
     #region Unity Methods
-    public void Start()
+    public IEnumerator Start()
     {
+        yield return new WaitUntil(() => PlayerController.players.Count == 2);
         for (int i = 0; i < PlayerController.players.Count; i++)
         {
             PlayerController player = PlayerController.players[i];
@@ -48,17 +51,28 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         if (Instance != null)
         {
             Destroy(gameObject);
-            return;
         }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-        gameSettings = Resources.LoadAll<GameSettings>("Game Settings")[0];
-        if (_localPlayer.IsThisTurn)
+        else
         {
-            Debug.Log("This one is \"Host\"");
-            SetUp();
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            gameSettings = Resources.LoadAll<GameSettings>("Game Settings")[0];
+            if (HasStateAuthority)
+            {
+                Debug.Log("This one is \"Host\"");
+                SetUp();
+            }
+            Timer = MAX_TIME;
         }
 
+    }
+    private void Update()
+    {
+        Timer -= Time.deltaTime;
+        if (Timer <= 0 && HasStateAuthority)
+        {
+            RPC_EndTurnRequest();
+        }
     }
     private void OnEnable()
     {
@@ -184,6 +198,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
                 if (_opponentPlayer.HP <= 0) return;
             }
         }
+        Timer = MAX_TIME;
         RPC_TurnSwap();
         RPC_ClearSelectedCards();
         RPC_UpdateCardState();
