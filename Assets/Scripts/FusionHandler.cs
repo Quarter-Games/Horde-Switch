@@ -27,23 +27,23 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
     private void PlayerLeft(NetworkRunner arg0, PlayerRef arg1)
     {
         Debug.Log("Player LEFT");
-        Destroy(TurnManager.Instance.gameObject);
-        SceneManager.LoadScene("Main Menu");
+        //Destroy(TurnManager.Instance.gameObject);
+        //SceneManager.LoadScene("Main Menu");
     }
 
     private void OnDisconnect(NetworkRunner arg0, NetDisconnectReason arg1)
     {
-        Debug.Log("Player LEFT");
-        Destroy(TurnManager.Instance.gameObject);
-        SceneManager.LoadScene("Main Menu");
+        Debug.Log("Disconnect");
+        //Destroy(TurnManager.Instance.gameObject);
+        //SceneManager.LoadScene("Main Menu");
     }
 
     private void OnShutDown(NetworkRunner runner, ShutdownReason reason)
     {
 
-        Debug.Log("Player LEFT");
-        Destroy(TurnManager.Instance.gameObject);
-        SceneManager.LoadScene("Main Menu");
+        Debug.Log("Shut DOWN");
+        //Destroy(TurnManager.Instance.gameObject);
+        //SceneManager.LoadScene("Main Menu");
     }
 
     public void PlayerJoined(PlayerRef player)
@@ -63,6 +63,6 @@ public class FusionHandler : SimulationBehaviour, IPlayerJoined
         {
             TurnManager.Instance.RPC_Disconnect(runner.LocalPlayer);
         }
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Main Menu");
     }
 }

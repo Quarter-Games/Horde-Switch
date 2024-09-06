@@ -24,6 +24,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     [SerializeField] Enemy enemyPrefab;
     [Networked, Capacity(12)] public NetworkLinkedList<Enemy> EnemyList => default;
     [SerializeField] Vector2 EnemyGridSize;
+    private bool isEnded;
 
     [Networked] public Deck EnemyDeck { get => default; set { } }
     [Networked] public Deck PlayersDeck { get => default; set { } }
@@ -68,6 +69,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     }
     private void Update()
     {
+        if (isEnded) return;
         Timer -= Time.deltaTime;
         if (Timer <= 0 && HasStateAuthority)
         {
@@ -274,7 +276,7 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     private void RPC_InvokePlayerDieEvent(PlayerController player)
     {
         PlayerDied?.Invoke(player);
-        Runner.Shutdown();
+        isEnded = true;
     }
     [Rpc]
     private void RPC_EnemyDiedInvokeSound()

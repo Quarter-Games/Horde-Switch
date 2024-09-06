@@ -29,6 +29,8 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] TMP_Text CountDown;
     [SerializeField] Image TimerImage;
     [SerializeField] Button EndTurnButton;
+    [SerializeField] GameObject WinScreen;
+    [SerializeField] GameObject LoseScreen;
 
     private void OnEnable()
     {
@@ -69,19 +71,29 @@ public class GameplayUIHandler : MonoBehaviour
         if (controller == _playerController)
         {
             Debug.Log("You Lost");
-            TurnText.text = "You Lost";
-            ShowMessageAndEndButton("You Lost");
+            StartCoroutine(ShowEndScreen(false));
             _localPlayerUIContainer.UpdateHealth(0);
         }
         else
         {
             Debug.Log("You Won");
-            TurnText.text = "You Won";
-            ShowMessageAndEndButton("You Won");
+            StartCoroutine(ShowEndScreen(true));
             _enemyPlayerUIContainer.UpdateHealth(0);
         }
     }
 
+    public IEnumerator ShowEndScreen(bool isWin)
+    {
+        yield return new WaitForSeconds(1);
+        if (isWin)
+        {
+            WinScreen.SetActive(true);
+        }
+        else
+        {
+            LoseScreen.SetActive(true);
+        }
+    }
     private void UpdateHealth(PlayerController controller)
     {
         if (controller == _playerController)
@@ -137,12 +149,6 @@ public class GameplayUIHandler : MonoBehaviour
         PopUpText.text = message;
         yield return new WaitForSeconds(1);
         PopUpWindowParent.gameObject.SetActive(false);
-    }
-    public void ShowMessageAndEndButton(string message)
-    {
-        PopUpWindowParent.gameObject.SetActive(true);
-        PopUpText.text = message;
-        GameFinishButton.gameObject.SetActive(true);
     }
     private void CardClicked(HandCardVisual visual)
     {
@@ -235,6 +241,11 @@ public class GameplayUIHandler : MonoBehaviour
     {
         if (!_playerController.IsThisTurn) return;
         RequestTurnSwap?.Invoke();
+    }
+    public void LeaveGame()
+    {
+        Destroy(TurnManager.Instance.gameObject);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Main Menu");
     }
 
 }
