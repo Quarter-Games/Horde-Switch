@@ -1,6 +1,7 @@
 using Fusion;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerController : NetworkBehaviour
@@ -42,6 +43,28 @@ public class PlayerController : NetworkBehaviour
         handCopy.AddCard(cards.Draw());
         Hand = handCopy;
 
+    }
+    public bool CanPlayAnything()
+    {
+        int value = 0;
+        for (int i = 0; i < Hand.Count; i++)
+        {
+            if (Hand[i].ID == 0) continue;
+            if (Hand[i].CardValue.DataOfCard.IsMonoSelectedCard())
+            {
+                return true;
+            }
+            else
+            {
+                value += Hand[i].CardValue.DataOfCard.Value;
+            }
+            if (Hand[i].CardValue.DataOfCard.GetPossibleEnemies(TurnManager.Instance.EnemyList.ToList(), MainRow).Count != 0)
+            {
+                return true;
+            }
+        }
+        if (TurnManager.Instance.EnemyList.ToList().Any(x => x.RowNumber == MainRow && x.Card.CardValue.DataOfCard.Value <= value)) return true;
+        return false;
     }
     private void Awake()
     {

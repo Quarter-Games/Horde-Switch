@@ -12,6 +12,7 @@ using UnityEngine.UI;
 public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     public static event Action<HandCardVisual> CardDiscarded;
+    public static event Action<HandCardVisual> HelpButtonPressed;
     public static SelectedCards selectedCards = new();
     public static Action<HandCardVisual> OnCardClicked;
     public static event Action<Card> OnCardPlaySound;
@@ -23,6 +24,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     [SerializeField] Material DisolvingMaterialStart;
     [SerializeField] Material DisolvingMaterialFinished;
     [SerializeField] AnimationCurve cardMovementCurve;
+    public Image HelpButton;
     public static FloorTile lastHoverTile;
     private bool isDisolving;
     private Coroutine currentMovementRoutine;
@@ -32,6 +34,7 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
     public void SetUpVisual(Card card)
     {
         bool wasActive = cardImage.enabled;
+        HelpButton.gameObject.SetActive(false);
         if (CardData.ID != card.ID) StartCoroutine(CardResolving());
         CardData = card;
         cardImage.enabled = card.ID != 0;
@@ -39,9 +42,18 @@ public class HandCardVisual : MonoBehaviour, IPointerClickHandler, IEffectPlayer
         {
             return;
         }
+        if (card.CardValue is not WeaponCardResources)
+        {
+
+            HelpButton.gameObject.SetActive(true);
+        }
         Card_ID = card.ID.ToString();
         cardImage.sprite = CardData.CardValue.cardSprite;
 
+    }
+    public void ActivateHelpPopup()
+    {
+        HelpButtonPressed?.Invoke(this);
     }
     public void OnPointerClick(PointerEventData eventData)
     {

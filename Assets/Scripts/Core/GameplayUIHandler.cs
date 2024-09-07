@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Collections;
 using System.Linq;
+using UnityEngine.InputSystem.XR;
 
 public class GameplayUIHandler : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class GameplayUIHandler : MonoBehaviour
     [SerializeField] TMP_Text CountDown;
     [SerializeField] Image TimerImage;
     [SerializeField] Button EndTurnButton;
+    [SerializeField] TMP_Text EndTurnButtonText;
     [SerializeField] GameObject WinScreen;
     [SerializeField] GameObject LoseScreen;
 
@@ -128,6 +130,8 @@ public class GameplayUIHandler : MonoBehaviour
             TurnText.text = "Your Turn";
             EndTurnButton.interactable = true;
             StartCoroutine(ShowAndHideMessage("Your Turn"));
+            UpdateCardVisuals();
+            return;
         }
         else
         {
@@ -137,7 +141,6 @@ public class GameplayUIHandler : MonoBehaviour
             }
             Debug.Log("Opponent Turn");
             TurnText.text = "Opponent Turn";
-            EndTurnButton.interactable = true;
             StartCoroutine(ShowAndHideMessage("Opponent Turn"));
         }
         UpdateCardVisuals();
@@ -236,11 +239,38 @@ public class GameplayUIHandler : MonoBehaviour
             cardVisual.SetActive(true);
         }
         ChangeEnemyCardsVisual();
+        bool canPlay = _playerController.CanPlayAnything();
+        bool AlreadyPlayed = _playerController.IsPlayedInThisTurn;
+        EndTurnButtonText.text = "End Turn";
+        if (canPlay && !AlreadyPlayed)
+        {
+            EndTurnButton.interactable = false;
+        }
+        else if (canPlay && AlreadyPlayed)
+        {
+            EndTurnButton.interactable = true;
+        }
+        else if (!canPlay)
+        {
+            EndTurnButton.interactable = true;
+            if (!AlreadyPlayed)
+            {
+                if (_playerController.HP == 2)
+                {
+                    EndTurnButtonText.text = "Lose Life";
+                }
+                else
+                {
+                    EndTurnButtonText.text = "The End is Here";
+                }
+            }
+        }
     }
     public void EndTurn()
     {
         if (!_playerController.IsThisTurn) return;
         RequestTurnSwap?.Invoke();
+        EndTurnButton.interactable = false;
     }
     public void LeaveGame()
     {
