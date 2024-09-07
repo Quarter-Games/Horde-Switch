@@ -19,6 +19,7 @@ MonoBehaviour:
   data:
     ID: 11
     Value: 11
-    Name: Portal
+    Name: 'Portal: Swap one of your cards with an opponent''s card from the same
+      line'
     ownerType: 0
     cardType: 2

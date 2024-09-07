@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43a9baddc7cee4c4fb7098754ecca2b8, type: 3}
   m_Name: Basic
   m_EditorClassIdentifier: 
-  ShuffleSound: {fileID: 0}
-  DrawCardSound: {fileID: 0}
+  ShuffleSound: {fileID: 8300000, guid: c08fea805864042418d5b8fe71b076f4, type: 3}
+  DrawCardSound: {fileID: 8300000, guid: 742691e8e140ee04cb6b599fd677bb54, type: 3}
   EnemyDiedSound: {fileID: 8300000, guid: e43ae188d73fad148a9a5592ef290c1a, type: 3}
-  HPLostSound: {fileID: 0}
+  HPLostSound: {fileID: 8300000, guid: fafcb039b7b3e2d42b52f7ac12184659, type: 3}
   gameConfig:
     name: Basic
     PlayerDeckSize: 39

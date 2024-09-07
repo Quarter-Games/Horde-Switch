@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7721ba71b5220214da44e9961f831ee5, type: 3}
   m_Name: 14
   m_EditorClassIdentifier: 
-  OnBeingPlayed: {fileID: 0}
-  OnActivateEffect: {fileID: 0}
+  OnBeingPlayed: {fileID: 8300000, guid: b8e75892ead7e0540a10fb710e968a1b, type: 3}
+  OnActivateEffect: {fileID: 8332471568158790285, guid: 457969e0e9b45b64fa53cb23de2bee97, type: 3}
   OnDeathEffect: {fileID: 0}
   cardSprite: {fileID: 204786658465091572, guid: edaa2fb592aa05f4aac60f77c4475a1f, type: 3}
   data:
     ID: 14
     Value: 0
-    Name: Sniper
+    Name: 'Sniper: Target and shoot an enemy player''s card, removing it from play.'
     ownerType: 0
     cardType: 5
