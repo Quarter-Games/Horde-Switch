@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 5
   m_EditorClassIdentifier: 
   OnBeingPlayed: {fileID: 8300000, guid: 61b353b78fdae5a43a139142f4b42a46, type: 3}
-  OnActivateEffect: {fileID: 4412140118306249217, guid: 5d7a0a3bb85578c4987063d469150b04, type: 3}
+  OnActivateEffect: {fileID: 5809401173540968476, guid: ddd9894b3323d294b9fa5d40f263bfb2, type: 3}
   OnDeathEffect: {fileID: 0}
   cardSprite: {fileID: -5337035524864177859, guid: 61f3f89dc30eecc4cb525a0a44807a9e, type: 3}
   data:
