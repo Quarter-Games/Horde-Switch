@@ -28,9 +28,8 @@ public class MineCardData : CardData
     }
     public override void ApplyEffect(TurnManager manager, Enemy enemy)
     {
-        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
         var card = HandCardVisual.selectedCards.UseCards();
-        enemy.PlaceMine();
+        enemy.PlaceMine(card);
         CardIsPlayed?.Invoke(card, enemy.GetEffectSpawnPosition());
     }
     public override bool IsMonoSelectedCard()

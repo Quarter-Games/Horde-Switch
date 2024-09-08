@@ -82,7 +82,7 @@ public class CardData
     public string Name;
     public OwnerType ownerType;
     public CardType cardType;
-    public static Action<Card,Vector3> CardIsPlayed;
+    public static Action<Card, Vector3> CardIsPlayed;
     public CardData(List<string> data)
     {
         ID = int.Parse(data[0]);
@@ -104,11 +104,10 @@ public class CardData
     }
     virtual public void ApplyEffect(TurnManager manager, Enemy enemy)
     {
-        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
-        Debug.Log($"Is enemy has mine on it: {enemy.HasMine}");
         Card usedCard;
         if (!enemy.HasMine)
         {
+            manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
             usedCard = HandCardVisual.selectedCards.UseCards();
             manager.RPC_KillEnemy(enemy);
         }

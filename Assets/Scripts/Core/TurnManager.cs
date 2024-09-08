@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class TurnManager : NetworkBehaviour, IEffectPlayer
 {
@@ -159,10 +160,11 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         var columnNum2 = enemy.ColumnNumber;
         var pos1 = secondEnemy.RowNumber;
         var pos2 = enemy.RowNumber;
-        StartCoroutine(MoveWithDelay(enemy, new Vector3(columnNum1, 0, pos1), pos1, false));
+        StartCoroutine(SwapEnemiesAnimation(enemy, new Vector3(columnNum1, 0, pos1), pos1, secondEnemy, new Vector3(columnNum2, 0, pos2), pos2));
+        //StartCoroutine(MoveWithDelay(enemy, new Vector3(columnNum1, 0, pos1), pos1, false));
         enemy.RowNumber = pos1;
         enemy.ColumnNumber = columnNum1;
-        StartCoroutine(MoveWithDelay(secondEnemy, new Vector3(columnNum2, 0, pos2), pos2, false));
+        //StartCoroutine(MoveWithDelay(secondEnemy, new Vector3(columnNum2, 0, pos2), pos2, false));
         secondEnemy.RowNumber = pos2;
         secondEnemy.ColumnNumber = columnNum2;
     }
@@ -235,13 +237,22 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         var cardToRemove = inactivePlayer.Hand[cardIndex];
         inactivePlayer.RPC_RemoveCard(cardToRemove);
 
-        // Draw a new card for the inactive player
-        DrawCardForPlayer(inactivePlayer);
     }
 
     #endregion
 
     #region RPC Clients Methods
+    [Rpc]
+    private void RPC_PlayDrawSound()
+    {
+        IEffectPlayer.OnPlaySFX?.Invoke(gameSettings.DrawCardSound);
+    }
+    [Rpc]
+    private void RPC_PlayShuffleSound()
+    {
+
+        IEffectPlayer.OnPlaySFX?.Invoke(gameSettings.ShuffleSound);
+    }
     [Rpc]
     private void RPC_PlayCardSound(Card card)
     {
@@ -257,7 +268,9 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
     private void RPC_CallDamageEvent(PlayerController player)
     {
         IEffectPlayer.OnPlaySFX?.Invoke(gameSettings.HPLostSound);
-
+        var list = EnemyList.Where(x => x.RowNumber == player.MainRow).ToList();
+        var random = list[UnityEngine.Random.Range(0, list.Count())];
+        random.EnemyAnimator.SetTrigger("Attack");
         PlayerGotDamage?.Invoke(player);
     }
     [Rpc]
@@ -337,16 +350,51 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         RPC_UpdateCardState();
         CardClicked();
     }
+    private IEnumerator SwapEnemiesAnimation(Enemy enemy, Vector3 pos, int posX, Enemy secondEnemy, Vector3 pos2, int posx2)
+    {
+        Vector3 WorldPos = (GridTiles[11 - ((int)(pos.z) * 4 + (int)pos.x + 1)].transform.position + GridTiles[11 - ((int)(pos.z) * 4 + (int)pos.x + 1)].transform.right);
+        WorldPos -= new Vector3(1, 0, 0);
+        Vector3 WorldPos2 = (GridTiles[11 - ((int)(pos2.z) * 4 + (int)pos2.x + 1)].transform.position + GridTiles[11 - ((int)(pos2.z) * 4 + (int)pos2.x + 1)].transform.right);
+        WorldPos2 -= new Vector3(1, 0, 0);
+        var time = MovementCurve.keys[MovementCurve.length - 1].time;
+        enemy.EnemyAnimator.SetFloat("Speed", 1);
+        secondEnemy.EnemyAnimator.SetFloat("Speed", 1);
+        for (int i = 0; i <= time * 15; i++)
+        {
+            enemy.transform.position = Vector3.Lerp(enemy.transform.position, enemy.transform.position - Vector3.up * 10, MovementCurve.Evaluate(i / 60.0f));
+            secondEnemy.transform.position = Vector3.Lerp(secondEnemy.transform.position, secondEnemy.transform.position - Vector3.up * 10, MovementCurve.Evaluate(i / 60.0f));
+            yield return new WaitForFixedUpdate();
+        }
+        for (int i = 0; i <= time * 30; i++)
+        {
+            enemy.transform.position = Vector3.Lerp(enemy.transform.position, WorldPos - Vector3.up * 10, MovementCurve.Evaluate(i / 60.0f));
+            secondEnemy.transform.position = Vector3.Lerp(secondEnemy.transform.position, WorldPos2 - Vector3.up * 10, MovementCurve.Evaluate(i / 60.0f));
+            yield return new WaitForFixedUpdate();
+        }
+        for (int i = 0; i <= time * 15; i++)
+        {
+            enemy.transform.position = Vector3.Lerp(enemy.transform.position, WorldPos, MovementCurve.Evaluate(i / 60.0f));
+            secondEnemy.transform.position = Vector3.Lerp(secondEnemy.transform.position, WorldPos2, MovementCurve.Evaluate(i / 60.0f));
+            yield return new WaitForFixedUpdate();
+        }
+        enemy.EnemyAnimator.SetFloat("Speed", 0);
+        secondEnemy.EnemyAnimator.SetFloat("Speed", 0);
+        enemy.transform.position = WorldPos;
+        secondEnemy.transform.position = WorldPos2;
+        yield return null;
+    }
     private IEnumerator MoveWithDelay(Enemy enemy, Vector3 position, int xPos, bool needToSpawn = true)
     {
         Vector3 WorldPos = (GridTiles[11 - ((int)(position.z) * 4 + (int)position.x + 1)].transform.position + GridTiles[11 - ((int)(position.z) * 4 + (int)position.x + 1)].transform.right);
         WorldPos -= new Vector3(1, 0, 0);
         var time = MovementCurve.keys[MovementCurve.length - 1].time;
+        enemy.EnemyAnimator.SetFloat("Speed", 1);
         for (int i = 0; i <= time * 60; i++)
         {
             enemy.transform.position = Vector3.Lerp(enemy.transform.position, WorldPos, MovementCurve.Evaluate(i / 60.0f));
             yield return new WaitForFixedUpdate();
         }
+        enemy.EnemyAnimator.SetFloat("Speed", 0);
         enemy.transform.position = WorldPos;
         if (needToSpawn) SpawnEnemy(new Vector3Int(xPos, 0, 1));
 
@@ -433,11 +481,13 @@ public class TurnManager : NetworkBehaviour, IEffectPlayer
         {
             PlayersDeck = new(DiscardPile);
             DiscardPile = new Deck();
+            RPC_PlayShuffleSound();
         }
         player.RPC_DrawCard(PlayersDeck);
         var DeckCopy = PlayersDeck;
         DeckCopy.Draw();
         PlayersDeck = DeckCopy;
+        RPC_PlayDrawSound();
     }
     private void OnApplicationFocus(bool focus)
     {

@@ -5,16 +5,19 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
+public class Enemy : NetworkBehaviour, IPointerClickHandler, IEffectPlayer
 {
     public static event Action MinePlaced;
     public static Action<Enemy, PointerEventData> OnEnemyClick;
+    public Animator EnemyAnimator;
     public NetworkTransform networkTransform;
     public bool HasVisiableMine;
+    [Networked] public Card MineCard { get => default; set { } }
     [Networked] public bool HasMine { get => default; set { } }
     [Networked] public int RowNumber { get => default; set { } }
     [Networked] public int ColumnNumber { get => default; set { } }
     [Networked] public Card Card { get => default; set { } }
+
 
     public GameObject enemyModel;
     public TMPro.TMP_Text enemyValue;
@@ -44,15 +47,16 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
     {
         OnEnemyClick?.Invoke(this, eventData);
     }
-    public void PlaceMine()
+    public void PlaceMine(Card MineCard)
     {
-        RPC_SetMine();
+        RPC_SetMine(MineCard);
         HasVisiableMine = true;
         //TODO: Add visuals for the player, that put the mine
     }
     [Rpc(sources: RpcSources.All, targets: RpcTargets.StateAuthority)]
-    private void RPC_SetMine()
+    private void RPC_SetMine(Card MineCard)
     {
+        this.MineCard = MineCard;
         HasMine = true;
         RPC_RaiseMinePlaceEvent();
     }
@@ -72,11 +76,12 @@ public class Enemy : NetworkBehaviour, IPointerClickHandler,IEffectPlayer
     private void RPC_RemoveMineVisual()
     {
         HasVisiableMine = false;
-        //TODO: VFX of BOOM
+
+        VFXManager.PlayVFX(MineCard.CardValue.OnDeathEffect, GetEffectSpawnPosition(),Quaternion.identity);
     }
     public Vector3 GetEffectSpawnPosition()
     {
 
-       return transform.position+transform.up*3;
+        return transform.position + transform.up * 3;
     }
 }
