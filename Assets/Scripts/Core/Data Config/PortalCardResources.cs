@@ -44,10 +44,12 @@ public class PortalCardData : CardData
     {
         if (ClickedFirst == null)
         {
+
             ClickedFirst = enemy;
             var card1 = HandCardVisual.selectedCards[0];
             HandCardVisual.selectedCards[0].Use(false);
             HandCardVisual.selectedCards.TriggerChanged();
+            if (PortalEffect != null) PortalEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             PortalEffect = GameObject.Instantiate(card1.CardData.CardValue.OnActivateEffect, enemy.transform.position + Vector3.up, Quaternion.Euler(-90, 0, 0));
             return;
         }
@@ -59,6 +61,7 @@ public class PortalCardData : CardData
             HandCardVisual.selectedCards[0].DeselectCard();
             return;
         }
+        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
         manager.RPC_SwapEnemies(enemy, ClickedFirst);
         var card = HandCardVisual.selectedCards.UseCards();
         manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);

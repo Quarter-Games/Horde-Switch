@@ -24,6 +24,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] List<Image> Avatars;
     [SerializeField] PlayerAvatars playerAvatars;
     [SerializeField] Image PlayerAvatar;
+    [SerializeField] TMPro.TMP_Text PlayerName;
 
     public PlayerController PlayerPrefab;
     [SerializeField] private bool isRoomPrivate;
@@ -31,6 +32,7 @@ public class MainMenuManager : MonoBehaviour
     {
         playerName = PlayerPrefs.GetString("PlayerName", "Player");
         AvatarID = PlayerPrefs.GetInt("AvatarID", 0);
+        PlayerName.text = playerName;
         PlayerAvatar.sprite = playerAvatars[AvatarID];
         for (int i = 0; i < Avatars.Count; i++)
         {
@@ -75,6 +77,7 @@ public class MainMenuManager : MonoBehaviour
     {
         playerName = Name;
         PlayerPrefs.SetString("PlayerName", playerName);
+        PlayerName.text = playerName;
     }
     private void OnShutdown(NetworkRunner runner, ShutdownReason reason)
     {

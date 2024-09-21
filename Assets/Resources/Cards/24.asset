@@ -22,4 +22,4 @@ MonoBehaviour:
     Name: 
     ownerType: 1
     cardType: 0
-  enemyPrefab: {fileID: 7419287335046792780, guid: b70d15d95dcff7b4e9f2fe85acef3bb6, type: 3}
+  enemyPrefab: {fileID: 8889622239154581472, guid: 17451e4b2cc06404bab27a95f852bb1c, type: 3}

@@ -11,10 +11,23 @@ public class HelpPopUp : MonoBehaviour
     private void OnEnable()
     {
         HandCardVisual.HelpButtonPressed += HandCardVisual_HelpButtonPressed;
+        HandCardVisual.CardDiscarded += HandCardVisual_CardDiscarded;
     }
+
+    private void HandCardVisual_CardDiscarded(HandCardVisual obj)
+    {
+        if (currentCard == obj)
+        {
+            obj.HelpButton.sprite = DisabledButton;
+            HelpObject.SetActive(false);
+            currentCard = null;
+        }
+    }
+
     private void OnDisable()
     {
         HandCardVisual.HelpButtonPressed -= HandCardVisual_HelpButtonPressed;
+        HandCardVisual.CardDiscarded -= HandCardVisual_CardDiscarded;
     }
     private void HandCardVisual_HelpButtonPressed(HandCardVisual cardVisual)
     {
