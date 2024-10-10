@@ -26,6 +26,7 @@ public class SniperCardData : CardData
     public override bool IsMonoSelectedCard() => true;
     public void ApplyEffect(TurnManager manager, HandCardVisual cardVisual)
     {
+        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
         manager.RPC_UseSniperCard(cardVisual.IndexInHand);
         Card usedCard = HandCardVisual.selectedCards.UseCards();
         CardIsPlayed?.Invoke(usedCard, cardVisual.transform.position);

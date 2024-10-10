@@ -61,7 +61,6 @@ public class PortalCardData : CardData
             HandCardVisual.selectedCards[0].DeselectCard();
             return;
         }
-        manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
         manager.RPC_SwapEnemies(enemy, ClickedFirst);
         var card = HandCardVisual.selectedCards.UseCards();
         manager.RPC_SetIfCardWasPlayed(PlayerController.players.Find(x => x.isLocalPlayer).PlayerID);
